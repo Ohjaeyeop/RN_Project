@@ -47,7 +47,7 @@ const TabBarLabel = ({focused, label}: {focused: boolean; label: string}) => {
 const MainTabNavigator = () => {
   return (
     <NavigationContainer>
-      <Tab.Navigator>
+      <Tab.Navigator screenOptions={{headerTitleAlign: 'center'}}>
         <Tab.Screen
           name="Diary"
           component={Diary}
