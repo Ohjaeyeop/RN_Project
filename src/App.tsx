@@ -1,8 +1,8 @@
 import React from 'react';
-import {View} from 'react-native';
+import MainTabNavigator from './navigation/MainTabNavigator';
 
 const App = () => {
-  return <View></View>;
+  return <MainTabNavigator />;
 };
 
 export default App;
