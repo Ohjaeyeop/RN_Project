@@ -1,8 +1,11 @@
 import React from 'react';
 import MainTabNavigator from './navigation/MainTabNavigator';
+import AuthForm from './components/screen/AuthForm';
+import {useUser} from './providers/UserProvider';
 
 const App = () => {
-  return <MainTabNavigator />;
+  const {user} = useUser();
+  return user === undefined ? <AuthForm /> : <MainTabNavigator />;
 };
 
 export default App;
