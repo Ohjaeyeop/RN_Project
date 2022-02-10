@@ -8,6 +8,7 @@ import setIntervalWithTimeout, {
 } from '../../utils/setIntervalWithTimeout';
 import {useAppDispatch, useAppSelector} from '../../hooks/useReduxFunction';
 import {increment, selectStudyInfo} from '../../redux/studyInfoSlice';
+import getDisplayedTime from '../../utils/getDisplayedTime';
 
 export type Subject = '국어' | '수학' | '영어' | '한국사' | '기타';
 
@@ -73,7 +74,7 @@ const StudyTimer = () => {
             styles.text,
             {fontSize: 41, fontWeight: 'bold', lineHeight: 61},
           ]}>
-          {studyInfo.total}
+          {getDisplayedTime(studyInfo.total)}
         </Text>
       </View>
       <View style={styles.subjectBox}>
@@ -99,6 +100,9 @@ const StudyTimer = () => {
               </TouchableOpacity>
               <Text style={[styles.text, {fontSize: 15}]}>{subject}</Text>
             </View>
+            <Text style={[styles.text, {fontSize: 15}]}>
+              {getDisplayedTime(studyInfo[subject])}
+            </Text>
           </View>
         ))}
       </View>
@@ -126,6 +130,7 @@ const styles = StyleSheet.create({
   subjectLine: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     borderBottomWidth: 1,
     borderColor: color.lightGray,
     padding: 20,
