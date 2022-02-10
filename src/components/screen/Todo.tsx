@@ -1,16 +1,59 @@
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
   Text,
   Pressable,
+  Dimensions,
+  TextInput,
 } from 'react-native';
 import {color} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useUser} from '../../providers/UserProvider';
+import firestore from '@react-native-firebase/firestore';
+import Modal from 'react-native-modalbox';
+import Button from '../shared/Button';
+
+type Todo = {
+  id: string;
+  title: string;
+  body: string;
+  complete: boolean;
+};
 
 const Todo = () => {
+  const {user} = useUser();
+  const todosRef = firestore()
+    .collection('Todo')
+    .doc(user?.username)
+    .collection('todos');
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const modalRef = useRef<Modal>(null);
+
+  async function addTodo() {
+    await todosRef.add({title, body, complete: false});
+    setTitle('');
+    setBody('');
+  }
+
+  useEffect(() => {
+    return todosRef.onSnapshot(querySnapshot => {
+      const list: Todo[] = [];
+      querySnapshot.forEach(doc => {
+        const {title, body, complete} = doc.data();
+        list.push({id: doc.id, title, body, complete});
+      });
+      setTodos(list);
+      if (loading) {
+        setLoading(false);
+      }
+    });
+  }, [loading, todosRef]);
+
   return (
     <View style={styles.todoContainer}>
       <View style={styles.selectView}>
@@ -21,9 +64,59 @@ const Todo = () => {
           <Text style={styles.selectText}>DONE</Text>
         </Pressable>
       </View>
-      <TouchableOpacity style={styles.addButton}>
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => modalRef.current?.open()}>
         <Icon name="add" color={color.white} size={25} />
       </TouchableOpacity>
+      <Modal
+        entry="bottom"
+        position="bottom"
+        swipeToClose={false}
+        coverScreen={true}
+        backdropOpacity={0.5}
+        ref={modalRef}
+        style={styles.modal}>
+        <View>
+          <Text
+            style={{
+              color: color.dark,
+              fontSize: 16,
+              fontWeight: '700',
+              marginBottom: 16,
+            }}>
+            TODO에 할 일을 추가합니다.
+          </Text>
+          <TextInput
+            autoCapitalize="none"
+            placeholder="제목을 적어주세요"
+            placeholderTextColor={color.dark}
+            value={title}
+            onChangeText={setTitle}
+            style={{
+              fontSize: 16,
+              fontWeight: '700',
+              paddingHorizontal: 5,
+              marginBottom: 10,
+            }}
+          />
+          <TextInput
+            autoCapitalize="none"
+            placeholder="할 일을 적어주세요"
+            placeholderTextColor={color.gray}
+            value={body}
+            onChangeText={setBody}
+            style={{
+              backgroundColor: color.lightGray,
+              padding: 8,
+              fontSize: 16,
+              borderRadius: 5,
+              marginBottom: 20,
+            }}
+          />
+          <Button text="저장하기" />
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -58,6 +151,12 @@ const styles = StyleSheet.create({
   selectText: {
     fontSize: 16,
     color: color.dark,
+  },
+  modal: {
+    height: Dimensions.get('window').height * 0.6,
+    borderRadius: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 24,
   },
 });
 
