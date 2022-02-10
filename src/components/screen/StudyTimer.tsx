@@ -1,5 +1,11 @@
-import React, {useRef, useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {color} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useUser} from '../../providers/UserProvider';
@@ -7,8 +13,14 @@ import setIntervalWithTimeout, {
   TimeoutHandler,
 } from '../../utils/setIntervalWithTimeout';
 import {useAppDispatch, useAppSelector} from '../../hooks/useReduxFunction';
-import {increment, selectStudyInfo} from '../../redux/studyInfoSlice';
+import {
+  getStudyInfo,
+  increment,
+  selectStudyInfo,
+  updateStudyInfo,
+} from '../../redux/studyInfoSlice';
 import getDisplayedTime from '../../utils/getDisplayedTime';
+import {useFocusEffect} from '@react-navigation/native';
 
 export type Subject = '국어' | '수학' | '영어' | '한국사' | '기타';
 
@@ -27,7 +39,36 @@ const StudyTimer = () => {
   const [selectedSubject, setSelectedSubject] = useState<Subject>();
   const handler = useRef(new TimeoutHandler()).current;
   const studyInfo = useAppSelector(selectStudyInfo);
+  const studyInfoStatus = useAppSelector(state => state.studyInfo.status);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (user) {
+      dispatch(getStudyInfo({username: user.username, date: '20220210'}));
+    }
+  }, [dispatch, user]);
+
+  useEffect(() => {
+    if (user && studyInfoStatus === 'succeeded') {
+      dispatch(
+        updateStudyInfo({
+          username: user.username,
+          date: '20220210',
+          studyInfo,
+        }),
+      );
+    }
+  }, [dispatch, studyInfo, studyInfoStatus, user]);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setSelectedSubject(undefined);
+        setIsStudying(false);
+        handler.clear();
+      };
+    }, [handler]),
+  );
 
   const startTimer = (subject: Subject) => {
     setIntervalWithTimeout(
@@ -51,6 +92,10 @@ const StudyTimer = () => {
       startTimer(subject);
     }
   };
+
+  if (studyInfoStatus === 'loading') {
+    return null;
+  }
 
   return (
     <View style={styles.timerContainer}>
