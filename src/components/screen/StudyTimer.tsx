@@ -37,12 +37,14 @@ const StudyTimer = () => {
 
   useEffect(() => {
     if (user) {
-      dispatch(getStudyInfo({username: user.username, date: today.toString()}));
+      dispatch(
+        getStudyInfo({username: user.username, date: selectedDate.toString()}),
+      );
     }
-  }, [dispatch, today, user]);
+  }, [dispatch, selectedDate, today, user]);
 
   useEffect(() => {
-    if (user && studyInfoStatus === 'succeeded') {
+    if (user && studyInfoStatus === 'succeeded' && selectedDate === today) {
       dispatch(
         updateStudyInfo({
           username: user.username,
@@ -51,7 +53,7 @@ const StudyTimer = () => {
         }),
       );
     }
-  }, [dispatch, selectedDate, studyInfo, studyInfoStatus, user]);
+  }, [dispatch, selectedDate, studyInfo, studyInfoStatus, today, user]);
 
   useFocusEffect(
     useCallback(() => {
@@ -110,7 +112,11 @@ const StudyTimer = () => {
         <Text style={[styles.text, {fontSize: 16, marginHorizontal: 17}]}>
           {DateUtil.monthDateDay(selectedDate)}
         </Text>
-        <Icon name={'arrow-right'} size={20} onPress={() => changeDate(1)} />
+        <Icon
+          name={'arrow-right'}
+          size={20}
+          onPress={selectedDate !== today ? () => changeDate(1) : undefined}
+        />
       </View>
       <View style={styles.displayedTime}>
         <Text
