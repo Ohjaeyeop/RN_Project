@@ -6,8 +6,10 @@ import {useUser} from '../../providers/UserProvider';
 import setIntervalWithTimeout, {
   TimeoutHandler,
 } from '../../utils/setIntervalWithTimeout';
+import {useAppDispatch, useAppSelector} from '../../hooks/useReduxFunction';
+import {increment, selectStudyInfo} from '../../redux/studyInfoSlice';
 
-type Subject = '국어' | '수학' | '영어' | '한국사' | '기타';
+export type Subject = '국어' | '수학' | '영어' | '한국사' | '기타';
 
 const days = ['일', '월', '화', '수', '목', '금', '토'];
 const subjects: Subject[] = ['국어', '수학', '영어', '한국사', '기타'];
@@ -22,13 +24,14 @@ const StudyTimer = () => {
 
   const [isStudying, setIsStudying] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState<Subject>();
-  const [time, setTime] = useState(0);
   const handler = useRef(new TimeoutHandler()).current;
+  const studyInfo = useAppSelector(selectStudyInfo);
+  const dispatch = useAppDispatch();
 
-  const startTimer = () => {
+  const startTimer = (subject: Subject) => {
     setIntervalWithTimeout(
       () => {
-        setTime(time => time + 1);
+        dispatch(increment(subject));
       },
       1000,
       handler,
@@ -44,7 +47,7 @@ const StudyTimer = () => {
       setSelectedSubject(subject);
       setIsStudying(true);
       handler.clear();
-      startTimer();
+      startTimer(subject);
     }
   };
 
@@ -70,7 +73,7 @@ const StudyTimer = () => {
             styles.text,
             {fontSize: 41, fontWeight: 'bold', lineHeight: 61},
           ]}>
-          {time}
+          {studyInfo.total}
         </Text>
       </View>
       <View style={styles.subjectBox}>

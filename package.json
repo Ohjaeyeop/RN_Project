@@ -15,11 +15,13 @@
     "@react-navigation/bottom-tabs": "^6.2.0",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.5.0",
+    "@reduxjs/toolkit": "^1.7.2",
     "react": "17.0.2",
     "react-native": "0.67.2",
     "react-native-safe-area-context": "^3.3.2",
     "react-native-screens": "^3.10.2",
-    "react-native-vector-icons": "^9.0.0"
+    "react-native-vector-icons": "^9.0.0",
+    "react-redux": "^7.2.6"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
@@ -28,6 +30,7 @@
     "@types/jest": "^26.0.23",
     "@types/react-native": "^0.66.15",
     "@types/react-native-vector-icons": "^6.4.10",
+    "@types/react-redux": "^7.1.22",
     "@types/react-test-renderer": "^17.0.1",
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",
