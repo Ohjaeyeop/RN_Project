@@ -1,49 +1,17 @@
-import React from 'react';
+import React, {useRef, useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {color} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useUser} from '../../providers/UserProvider';
+import setIntervalWithTimeout, {
+  TimeoutHandler,
+} from '../../utils/setIntervalWithTimeout';
+
+type Subject = '국어' | '수학' | '영어' | '한국사' | '기타';
 
 const days = ['일', '월', '화', '수', '목', '금', '토'];
-const subjects = ['국어', '수학', '영어', '한국사', '기타'];
+const subjects: Subject[] = ['국어', '수학', '영어', '한국사', '기타'];
 const subjectColors = ['#D3165E', '#EF6825', '#FFC108', '#009148', '#00A4EC'];
-
-class TimeoutHandler {
-  private handlerRef: {id: any} = {id: -1};
-
-  get handler(): any {
-    return this.handlerRef.id;
-  }
-  set handler(n: any) {
-    this.handlerRef.id = n;
-  }
-
-  clear() {
-    clearTimeout(this.handlerRef.id as any);
-  }
-}
-
-function setIntervalWithTimeout(
-  callback: (clear: () => void) => any,
-  intervalMs: number,
-  handleWrapper = new TimeoutHandler(),
-): TimeoutHandler {
-  let cleared = false;
-
-  const timeout = () => {
-    handleWrapper.handler = setTimeout(() => {
-      callback(() => {
-        cleared = true;
-        handleWrapper.clear();
-      });
-      if (!cleared) {
-        timeout();
-      }
-    }, intervalMs);
-  };
-  timeout();
-  return handleWrapper;
-}
 
 const StudyTimer = () => {
   const year = new Date().getFullYear();
@@ -52,9 +20,33 @@ const StudyTimer = () => {
   const day = days[new Date().getDay()];
   const {user} = useUser();
 
-  setIntervalWithTimeout(clear => {
-    /* 과목 공부시간 1초 증가, 합계 시간 1초 증가, 일시 정지 시 clear */
-  }, 1000);
+  const [isStudying, setIsStudying] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState<Subject>();
+  const [time, setTime] = useState(0);
+  const handler = useRef(new TimeoutHandler()).current;
+
+  const startTimer = () => {
+    setIntervalWithTimeout(
+      () => {
+        setTime(time => time + 1);
+      },
+      1000,
+      handler,
+    );
+  };
+
+  const handlePress = (subject: Subject) => {
+    if (subject === selectedSubject) {
+      handler.clear();
+      setSelectedSubject(undefined);
+      setIsStudying(!isStudying);
+    } else {
+      setSelectedSubject(subject);
+      setIsStudying(true);
+      handler.clear();
+      startTimer();
+    }
+  };
 
   return (
     <View style={styles.timerContainer}>
@@ -78,7 +70,7 @@ const StudyTimer = () => {
             styles.text,
             {fontSize: 41, fontWeight: 'bold', lineHeight: 61},
           ]}>
-          00:00:00
+          {time}
         </Text>
       </View>
       <View style={styles.subjectBox}>
@@ -94,7 +86,8 @@ const StudyTimer = () => {
                   marginRight: 12,
                   justifyContent: 'center',
                   alignItems: 'center',
-                }}>
+                }}
+                onPress={() => handlePress(subject)}>
                 <Icon name="play-arrow" color={color.white} size={20} />
               </TouchableOpacity>
               <Text style={[styles.text, {fontSize: 15}]}>{subject}</Text>
