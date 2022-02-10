@@ -1,11 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {color} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useUser} from '../../providers/UserProvider';
@@ -21,44 +15,43 @@ import {
 } from '../../redux/studyInfoSlice';
 import getDisplayedTime from '../../utils/getDisplayedTime';
 import {useFocusEffect} from '@react-navigation/native';
+import DateUtil from '../../utils/DateUtil';
 
 export type Subject = '국어' | '수학' | '영어' | '한국사' | '기타';
 
-const days = ['일', '월', '화', '수', '목', '금', '토'];
 const subjects: Subject[] = ['국어', '수학', '영어', '한국사', '기타'];
 const subjectColors = ['#D3165E', '#EF6825', '#FFC108', '#009148', '#00A4EC'];
 
 const StudyTimer = () => {
-  const year = new Date().getFullYear();
-  const month = new Date().getMonth() + 1;
-  const date = new Date().getDate();
-  const day = days[new Date().getDay()];
+  const today = DateUtil.now();
   const {user} = useUser();
-
   const [isStudying, setIsStudying] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState<Subject>();
+  const [selectedDate, setSelectedDate] = useState(today);
+  const [offset, setOffset] = useState(0);
   const handler = useRef(new TimeoutHandler()).current;
+
   const studyInfo = useAppSelector(selectStudyInfo);
   const studyInfoStatus = useAppSelector(state => state.studyInfo.status);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (user) {
-      dispatch(getStudyInfo({username: user.username, date: '20220210'}));
+      dispatch(getStudyInfo({username: user.username, date: today.toString()}));
     }
-  }, [dispatch, user]);
+  }, [dispatch, today, user]);
 
   useEffect(() => {
     if (user && studyInfoStatus === 'succeeded') {
       dispatch(
         updateStudyInfo({
           username: user.username,
-          date: '20220210',
+          date: selectedDate.toString(),
           studyInfo,
         }),
       );
     }
-  }, [dispatch, studyInfo, studyInfoStatus, user]);
+  }, [dispatch, selectedDate, studyInfo, studyInfoStatus, user]);
 
   useFocusEffect(
     useCallback(() => {
@@ -69,6 +62,11 @@ const StudyTimer = () => {
       };
     }, [handler]),
   );
+
+  const changeDate = (change: number) => {
+    setOffset(offset + change);
+    setSelectedDate(DateUtil.dateFromNow(offset + change));
+  };
 
   const startTimer = (subject: Subject) => {
     setIntervalWithTimeout(
@@ -81,6 +79,9 @@ const StudyTimer = () => {
   };
 
   const handlePress = (subject: Subject) => {
+    if (selectedDate !== today) {
+      return;
+    }
     if (subject === selectedSubject) {
       handler.clear();
       setSelectedSubject(undefined);
@@ -105,13 +106,11 @@ const StudyTimer = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        <Icon name={'arrow-left'} size={20} />
-        <Text
-          style={[
-            styles.text,
-            {fontSize: 16, marginHorizontal: 17},
-          ]}>{`${month}.${date}.(${day})`}</Text>
-        <Icon name={'arrow-right'} size={20} />
+        <Icon name={'arrow-left'} size={20} onPress={() => changeDate(-1)} />
+        <Text style={[styles.text, {fontSize: 16, marginHorizontal: 17}]}>
+          {DateUtil.monthDateDay(selectedDate)}
+        </Text>
+        <Icon name={'arrow-right'} size={20} onPress={() => changeDate(1)} />
       </View>
       <View style={styles.displayedTime}>
         <Text
