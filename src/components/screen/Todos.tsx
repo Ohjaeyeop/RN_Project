@@ -34,6 +34,9 @@ const Todos = () => {
   const [body, setBody] = useState('');
   const [todos, setTodos] = useState<TodoObj[]>([]);
   const [loading, setLoading] = useState(true);
+  const [displayedTodoType, setDisplayedTodoType] = useState<'TODO' | 'DONE'>(
+    'TODO',
+  );
   const modalRef = useRef<Modal>(null);
 
   async function addTodo() {
@@ -63,17 +66,37 @@ const Todos = () => {
   return (
     <View style={styles.todoContainer}>
       <View style={styles.selectView}>
-        <Pressable style={styles.touchableView}>
+        <Pressable
+          style={[
+            styles.touchableView,
+            {
+              borderColor:
+                displayedTodoType === 'TODO' ? color.primary : color.lightGray,
+            },
+          ]}
+          onPress={() => setDisplayedTodoType('TODO')}>
           <Text style={styles.selectText}>TODO</Text>
         </Pressable>
-        <Pressable style={styles.touchableView}>
+        <Pressable
+          style={[
+            styles.touchableView,
+            {
+              borderColor:
+                displayedTodoType === 'DONE' ? color.primary : color.lightGray,
+            },
+          ]}
+          onPress={() => setDisplayedTodoType('DONE')}>
           <Text style={styles.selectText}>DONE</Text>
         </Pressable>
       </View>
       <FlatList
         data={todos}
         renderItem={({item}) => (
-          <Todo toggleComplete={toggleComplete} {...item} />
+          <Todo
+            toggleComplete={toggleComplete}
+            type={displayedTodoType}
+            {...item}
+          />
         )}
         keyExtractor={todo => todo.id}
       />

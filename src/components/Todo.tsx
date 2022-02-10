@@ -4,16 +4,13 @@ import {TodoObj} from './screen/Todos';
 import {color} from '../theme/color';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const Todo = ({
-  toggleComplete,
-  id,
-  title,
-  body,
-  complete,
-}: {
+type Props = {
   toggleComplete: (id: string, complete: boolean) => Promise<void>;
-} & TodoObj) => {
-  return complete ? null : (
+} & {type: 'TODO' | 'DONE'} & TodoObj;
+
+const Todo = ({toggleComplete, type, id, title, body, complete}: Props) => {
+  return (type === 'TODO' && complete) ||
+    (type === 'DONE' && !complete) ? null : (
     <TouchableOpacity
       style={{
         paddingVertical: 16,
@@ -24,7 +21,7 @@ const Todo = ({
       <View
         style={{flexDirection: 'row', alignItems: 'center', marginBottom: 12}}>
         <Icon
-          name="checkbox-blank-outline"
+          name={type === 'TODO' ? 'checkbox-blank-outline' : 'checkbox-marked'}
           size={20}
           color={color.gray}
           onPress={() => toggleComplete(id, complete)}
@@ -34,6 +31,7 @@ const Todo = ({
             fontSize: 16,
             fontWeight: '700',
             marginLeft: 11,
+            textDecorationLine: type === 'DONE' ? 'line-through' : undefined,
           }}>
           {title}
         </Text>
