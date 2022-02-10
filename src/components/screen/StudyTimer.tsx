@@ -88,7 +88,11 @@ const StudyTimer = () => {
                   alignItems: 'center',
                 }}
                 onPress={() => handlePress(subject)}>
-                <Icon name="play-arrow" color={color.white} size={20} />
+                <Icon
+                  name={subject === selectedSubject ? 'pause' : 'play-arrow'}
+                  color={color.white}
+                  size={20}
+                />
               </TouchableOpacity>
               <Text style={[styles.text, {fontSize: 15}]}>{subject}</Text>
             </View>
