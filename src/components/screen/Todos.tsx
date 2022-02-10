@@ -45,6 +45,14 @@ const Todos = () => {
     setBody('');
   }
 
+  async function editTodo(id: string, title: string, body: string) {
+    await todosRef.doc(id).update({title, body});
+  }
+
+  async function deleteTodo(id: string) {
+    await todosRef.doc(id).delete();
+  }
+
   async function toggleComplete(id: string, complete: boolean) {
     await todosRef.doc(id).update({complete: !complete});
   }
