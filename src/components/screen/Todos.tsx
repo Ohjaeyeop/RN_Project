@@ -7,6 +7,7 @@ import {
   Pressable,
   Dimensions,
   TextInput,
+  FlatList,
 } from 'react-native';
 import {color} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -14,15 +15,16 @@ import {useUser} from '../../providers/UserProvider';
 import firestore from '@react-native-firebase/firestore';
 import Modal from 'react-native-modalbox';
 import Button from '../shared/Button';
+import Todo from '../Todo';
 
-type Todo = {
+export type TodoObj = {
   id: string;
   title: string;
   body: string;
   complete: boolean;
 };
 
-const Todo = () => {
+const Todos = () => {
   const {user} = useUser();
   const todosRef = firestore()
     .collection('Todo')
@@ -30,7 +32,7 @@ const Todo = () => {
     .collection('todos');
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<TodoObj[]>([]);
   const [loading, setLoading] = useState(true);
   const modalRef = useRef<Modal>(null);
 
@@ -40,9 +42,13 @@ const Todo = () => {
     setBody('');
   }
 
+  async function toggleComplete(id: string, complete: boolean) {
+    await todosRef.doc(id).update({complete: !complete});
+  }
+
   useEffect(() => {
     return todosRef.onSnapshot(querySnapshot => {
-      const list: Todo[] = [];
+      const list: TodoObj[] = [];
       querySnapshot.forEach(doc => {
         const {title, body, complete} = doc.data();
         list.push({id: doc.id, title, body, complete});
@@ -64,6 +70,13 @@ const Todo = () => {
           <Text style={styles.selectText}>DONE</Text>
         </Pressable>
       </View>
+      <FlatList
+        data={todos}
+        renderItem={({item}) => (
+          <Todo toggleComplete={toggleComplete} {...item} />
+        )}
+        keyExtractor={todo => todo.id}
+      />
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => modalRef.current?.open()}>
@@ -166,4 +179,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Todo;
+export default Todos;
