@@ -11,6 +11,7 @@ import {
   getStudyInfo,
   increment,
   selectStudyInfo,
+  setIdle,
   updateStudyInfo,
 } from '../../redux/studyInfoSlice';
 import getDisplayedTime from '../../utils/getDisplayedTime';
@@ -43,27 +44,29 @@ const StudyTimer = () => {
     }
   }, [dispatch, selectedDate, today, user]);
 
-  useEffect(() => {
-    if (user && studyInfoStatus === 'succeeded' && selectedDate === today) {
-      dispatch(
-        updateStudyInfo({
-          username: user.username,
-          date: selectedDate.toString(),
-          studyInfo,
-        }),
-      );
-    }
-  }, [dispatch, selectedDate, studyInfo, studyInfoStatus, today, user]);
-
   useFocusEffect(
     useCallback(() => {
       return () => {
         setSelectedSubject(undefined);
         setIsStudying(false);
         handler.clear();
+        dispatch(setIdle());
       };
-    }, [handler]),
+    }, [dispatch, handler]),
   );
+
+  useEffect(() => {
+    user &&
+      studyInfoStatus === 'succeeded' &&
+      selectedDate === today &&
+      dispatch(
+        updateStudyInfo({
+          username: user.username,
+          date: today.toString(),
+          studyInfo,
+        }),
+      );
+  }, [dispatch, studyInfo, studyInfoStatus, today, user]);
 
   const changeDate = (change: number) => {
     setOffset(offset + change);
@@ -84,21 +87,16 @@ const StudyTimer = () => {
     if (selectedDate !== today) {
       return;
     }
+    handler.clear();
     if (subject === selectedSubject) {
-      handler.clear();
       setSelectedSubject(undefined);
       setIsStudying(!isStudying);
     } else {
       setSelectedSubject(subject);
       setIsStudying(true);
-      handler.clear();
       startTimer(subject);
     }
   };
-
-  if (studyInfoStatus === 'loading') {
-    return null;
-  }
 
   return (
     <View style={styles.timerContainer}>

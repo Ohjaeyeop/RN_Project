@@ -32,7 +32,6 @@ export const getStudyInfo = createAsyncThunk(
       .doc(username)
       .collection(date)
       .get();
-
     if (querySnapshot.size === 0) {
       await firestore()
         .collection('StudyInfo')
@@ -65,6 +64,8 @@ export const updateStudyInfo = createAsyncThunk(
       .collection(date)
       .doc('Info')
       .update(studyInfo);
+
+    return studyInfo;
   },
 );
 
@@ -75,6 +76,9 @@ export const studyInfoSlice = createSlice({
     increment: (state, action: PayloadAction<Subject>) => {
       state.studyInfo[action.payload] += 1;
       state.studyInfo.total += 1;
+    },
+    setIdle: state => {
+      state.status = 'idle';
     },
   },
   extraReducers: builder => {
@@ -88,9 +92,12 @@ export const studyInfoSlice = createSlice({
     builder.addCase(getStudyInfo.rejected, state => {
       state.status = 'failed';
     });
+    builder.addCase(updateStudyInfo.fulfilled, (state, action) => {
+      state.studyInfo = action.payload;
+    });
   },
 });
 
-export const {increment} = studyInfoSlice.actions;
+export const {increment, setIdle} = studyInfoSlice.actions;
 export const selectStudyInfo = (state: RootState) => state.studyInfo.studyInfo;
 export default studyInfoSlice.reducer;
