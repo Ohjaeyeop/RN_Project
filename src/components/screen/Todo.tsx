@@ -114,7 +114,13 @@ const Todo = () => {
               marginBottom: 20,
             }}
           />
-          <Button text="저장하기" />
+          <Button
+            text="저장하기"
+            onPress={() => {
+              addTodo();
+              modalRef.current?.close();
+            }}
+          />
         </View>
       </Modal>
     </View>
