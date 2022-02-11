@@ -6,7 +6,6 @@ import {getStatusBarHeight} from 'react-native-status-bar-height';
 const statusBarHeight = getStatusBarHeight(true);
 
 const Header = styled.SafeAreaView`
-  background-color: ${({theme}: {theme: Theme}) => theme.background};
   width: 100%;
   height: ${statusBarHeight + 40}px;
   align-items: center;

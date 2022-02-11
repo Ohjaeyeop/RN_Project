@@ -9,7 +9,7 @@ import {
   TextInput,
   FlatList,
 } from 'react-native';
-import {color} from '../../theme/color';
+import {color, Theme} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useUser} from '../../providers/UserProvider';
 import firestore from '@react-native-firebase/firestore';
@@ -17,6 +17,7 @@ import Modal from 'react-native-modalbox';
 import Button from '../shared/Button';
 import Todo from '../Todo';
 import ScreenHeader from '../shared/ScreenHeader';
+import styled from 'styled-components/native';
 
 export type TodoObj = {
   id: string;
@@ -24,6 +25,45 @@ export type TodoObj = {
   body: string;
   complete: boolean;
 };
+
+const TodoContainer = styled.View`
+  flex: 1;
+  background-color: ${({theme}: {theme: Theme}) => theme.background};
+`;
+
+const StyledText = styled.Text`
+  color: ${({theme}: {theme: Theme}) => theme.text};
+  font-size: 16px;
+`;
+
+const TodoMoal = styled(Modal)`
+  background-color: ${({theme}: {theme: Theme}) => theme.background};
+  height: ${Dimensions.get('window').height * 0.6}px;
+  border-radius: 10px;
+  padding: 20px 24px;
+`;
+
+const TodoTitleInput = styled.TextInput.attrs(({theme}: {theme: Theme}) => ({
+  placeholderTextColor: theme.text,
+}))`
+  font-size: 16px;
+  font-weight: 700;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-bottom: 10px;
+  color: ${({theme}: {theme: Theme}) => theme.text};
+`;
+
+const TodoBodyInput = styled.TextInput.attrs(() => ({
+  placeholderTextColor: color.gray,
+}))`
+  background-color: ${({theme}: {theme: Theme}) => theme.box};
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  color: ${({theme}: {theme: Theme}) => theme.text};
+`;
 
 const Todos = () => {
   const {user} = useUser();
@@ -58,7 +98,7 @@ const Todos = () => {
     await todosRef.doc(id).update({complete: !complete});
   }
 
-  useEffect(() => {
+  /*  useEffect(() => {
     return todosRef.onSnapshot(querySnapshot => {
       const list: TodoObj[] = [];
       querySnapshot.forEach(doc => {
@@ -70,10 +110,10 @@ const Todos = () => {
         setLoading(false);
       }
     });
-  }, [loading, todosRef]);
+  }, [loading, todosRef]);*/
 
   return (
-    <View style={styles.todoContainer}>
+    <TodoContainer>
       <ScreenHeader title={'투두'} />
       <View style={styles.selectView}>
         <Pressable
@@ -85,7 +125,12 @@ const Todos = () => {
             },
           ]}
           onPress={() => setDisplayedTodoType('TODO')}>
-          <Text style={styles.selectText}>TODO</Text>
+          <StyledText
+            style={
+              displayedTodoType !== 'TODO' ? {color: color.gray} : undefined
+            }>
+            TODO
+          </StyledText>
         </Pressable>
         <Pressable
           style={[
@@ -96,7 +141,12 @@ const Todos = () => {
             },
           ]}
           onPress={() => setDisplayedTodoType('DONE')}>
-          <Text style={styles.selectText}>DONE</Text>
+          <StyledText
+            style={
+              displayedTodoType !== 'DONE' ? {color: color.gray} : undefined
+            }>
+            DONE
+          </StyledText>
         </Pressable>
       </View>
       <FlatList
@@ -115,7 +165,7 @@ const Todos = () => {
         onPress={() => modalRef.current?.open()}>
         <Icon name="add" color={color.white} size={25} />
       </TouchableOpacity>
-      <Modal
+      <TodoMoal
         entry="bottom"
         position="bottom"
         swipeToClose={false}
@@ -124,41 +174,24 @@ const Todos = () => {
         ref={modalRef}
         style={styles.modal}>
         <View>
-          <Text
+          <StyledText
             style={{
-              color: color.dark,
-              fontSize: 16,
               fontWeight: '700',
               marginBottom: 16,
             }}>
             TODO에 할 일을 추가합니다.
-          </Text>
-          <TextInput
+          </StyledText>
+          <TodoTitleInput
             autoCapitalize="none"
             placeholder="제목을 적어주세요"
-            placeholderTextColor={color.dark}
             value={title}
             onChangeText={setTitle}
-            style={{
-              fontSize: 16,
-              fontWeight: '700',
-              paddingHorizontal: 5,
-              marginBottom: 10,
-            }}
           />
-          <TextInput
+          <TodoBodyInput
             autoCapitalize="none"
             placeholder="할 일을 적어주세요"
-            placeholderTextColor={color.gray}
             value={body}
             onChangeText={setBody}
-            style={{
-              backgroundColor: color.lightGray,
-              padding: 8,
-              fontSize: 16,
-              borderRadius: 5,
-              marginBottom: 20,
-            }}
           />
           <Button
             text="저장하기"
@@ -168,16 +201,12 @@ const Todos = () => {
             }}
           />
         </View>
-      </Modal>
-    </View>
+      </TodoMoal>
+    </TodoContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  todoContainer: {
-    flex: 1,
-    backgroundColor: color.white,
-  },
   addButton: {
     position: 'absolute',
     bottom: 32,
@@ -199,10 +228,6 @@ const styles = StyleSheet.create({
     borderColor: color.lightGray,
     height: 56,
     paddingTop: 24,
-  },
-  selectText: {
-    fontSize: 16,
-    color: color.dark,
   },
   modal: {
     height: Dimensions.get('window').height * 0.6,
