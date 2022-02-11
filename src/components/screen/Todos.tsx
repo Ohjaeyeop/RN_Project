@@ -3,10 +3,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
-  Text,
   Pressable,
   Dimensions,
-  TextInput,
   FlatList,
 } from 'react-native';
 import {color, Theme} from '../../theme/color';
@@ -98,7 +96,7 @@ const Todos = () => {
     await todosRef.doc(id).update({complete: !complete});
   }
 
-  /*  useEffect(() => {
+  useEffect(() => {
     return todosRef.onSnapshot(querySnapshot => {
       const list: TodoObj[] = [];
       querySnapshot.forEach(doc => {
@@ -110,7 +108,7 @@ const Todos = () => {
         setLoading(false);
       }
     });
-  }, [loading, todosRef]);*/
+  }, [loading, todosRef]);
 
   return (
     <TodoContainer>
