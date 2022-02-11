@@ -1,12 +1,12 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {NavigationContainer, useTheme} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import Diary from '../components/screen/Diary';
 import Todos from '../components/screen/Todos';
 import Setting from '../components/screen/Setting';
 import StudyTimer from '../components/screen/StudyTimer';
 import Memo from '../components/screen/Memo';
-import {View, Text} from 'react-native';
+import {View} from 'react-native';
 import {color, Theme} from '../theme/color';
 import styled from 'styled-components/native';
 
@@ -28,6 +28,12 @@ const FocusedText = styled.Text`
 const NonFocusedText = styled.Text`
   color: ${color.gray};
   font-size: 12px;
+`;
+
+const TabBarBackground = styled.View`
+  background-color: ${({theme}: {theme: Theme}) => theme.background};
+  height: 100%;
+  width: 100%;
 `;
 
 const TabBarIcon = ({focused}: {focused: boolean}) => {
@@ -57,7 +63,7 @@ const MainTabNavigator = () => {
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
-          tabBarBackground: () => <View />,
+          tabBarBackground: () => <TabBarBackground />,
         }}>
         <Tab.Screen
           name="Diary"
