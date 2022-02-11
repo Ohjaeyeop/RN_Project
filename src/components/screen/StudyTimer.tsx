@@ -26,10 +26,16 @@ const subjects: Subject[] = ['국어', '수학', '영어', '한국사', '기타'
 const subjectColors = ['#D3165E', '#EF6825', '#FFC108', '#009148', '#00A4EC'];
 
 const TimerContainer = styled.View`
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
+  flex: 1;
   background-color: ${({theme}: {theme: Theme}) => theme.background};
+`;
+
+const StyledText = styled.Text`
+  color: ${({theme}: {theme: Theme}) => theme.text};
+`;
+
+const StyledIcon = styled(Icon)`
+  color: ${({theme}: {theme: Theme}) => theme.text};
 `;
 
 const StudyTimer = () => {
@@ -108,7 +114,7 @@ const StudyTimer = () => {
   };
 
   return (
-    <View style={styles.timerContainer}>
+    <TimerContainer>
       <ScreenHeader title={'타이머'} />
       <View
         style={{
@@ -116,24 +122,24 @@ const StudyTimer = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        <Icon name={'arrow-left'} size={20} onPress={() => changeDate(-1)} />
-        <Text style={[styles.text, {fontSize: 16, marginHorizontal: 17}]}>
+        <StyledIcon
+          name={'arrow-left'}
+          size={20}
+          onPress={() => changeDate(-1)}
+        />
+        <StyledText style={{fontSize: 16, marginHorizontal: 17}}>
           {DateUtil.monthDateDay(selectedDate)}
-        </Text>
-        <Icon
+        </StyledText>
+        <StyledIcon
           name={'arrow-right'}
           size={20}
           onPress={selectedDate !== today ? () => changeDate(1) : undefined}
         />
       </View>
       <View style={styles.displayedTime}>
-        <Text
-          style={[
-            styles.text,
-            {fontSize: 41, fontWeight: 'bold', lineHeight: 61},
-          ]}>
+        <StyledText style={{fontSize: 41, fontWeight: 'bold', lineHeight: 61}}>
           {getDisplayedTime(studyInfo.total)}
-        </Text>
+        </StyledText>
       </View>
       <View style={styles.subjectBox}>
         {subjects.map((subject, index) => (
@@ -156,23 +162,19 @@ const StudyTimer = () => {
                   size={20}
                 />
               </TouchableOpacity>
-              <Text style={[styles.text, {fontSize: 15}]}>{subject}</Text>
+              <StyledText style={{fontSize: 15}}>{subject}</StyledText>
             </View>
-            <Text style={[styles.text, {fontSize: 15}]}>
+            <StyledText style={{fontSize: 15}}>
               {getDisplayedTime(studyInfo[subject])}
-            </Text>
+            </StyledText>
           </View>
         ))}
       </View>
-    </View>
+    </TimerContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  timerContainer: {
-    flex: 1,
-    backgroundColor: color.white,
-  },
   text: {
     color: color.dark,
   },
