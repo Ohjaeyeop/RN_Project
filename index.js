@@ -9,14 +9,18 @@ import {name as appName} from './app.json';
 import {Provider} from 'react-redux';
 import {store} from './src/redux/store';
 import {UserProvider} from './src/providers/UserProvider';
+import {ThemeProvider} from 'styled-components';
+import {light, dark} from './src/theme/color';
 
 const RnApp = () => {
   return (
-    <Provider store={store}>
-      <UserProvider>
-        <App />
-      </UserProvider>
-    </Provider>
+    <ThemeProvider theme={light}>
+      <Provider store={store}>
+        <UserProvider>
+          <App />
+        </UserProvider>
+      </Provider>
+    </ThemeProvider>
   );
 };
 

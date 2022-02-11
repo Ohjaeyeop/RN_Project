@@ -13,3 +13,18 @@ export const color = {
   lightLightGray: '#F9FBFC',
   white: '#FFFFFF',
 };
+
+export type Theme = {
+  background: string;
+  text: string;
+};
+
+export const light = {
+  background: color.white,
+  text: color.dark,
+};
+
+export const dark = {
+  background: color.dark,
+  text: color.white,
+};

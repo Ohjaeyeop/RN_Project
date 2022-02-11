@@ -2,14 +2,36 @@ import React, {useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {
   TextInput,
-  View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {color} from '../../theme/color';
+import {color, Theme} from '../../theme/color';
 import {useUser} from '../../providers/UserProvider';
+import styled from 'styled-components/native';
+
+const AuthFormContainer = styled.View`
+  padding: 50px;
+  flex: 1;
+  justify-content: center;
+  background-color: ${({theme}: {theme: Theme}) => theme.background};
+`;
+
+const StyledText = styled.Text`
+  color: ${({theme}: {theme: Theme}) => theme.text};
+`;
+
+const StyledTextInput = styled.TextInput`
+  height: 40px;
+  border-width: 1px;
+  border-radius: 5px;
+  border-color: ${color.gray};
+  padding: 5px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  color: ${({theme}: {theme: Theme}) => theme.text};
+`;
 
 const AuthForm = () => {
   const {setUser} = useUser();
@@ -74,18 +96,16 @@ const AuthForm = () => {
   };
 
   return (
-    <View style={{padding: 50, flex: 1, justifyContent: 'center'}}>
-      <Text style={styles.text}>Username:</Text>
-      <TextInput
-        style={styles.input}
+    <AuthFormContainer>
+      <StyledText>Username:</StyledText>
+      <StyledTextInput
         autoCapitalize={'none'}
         autoCorrect={false}
         onChangeText={setUserName}
         value={username}
       />
-      <Text style={styles.text}>Password:</Text>
-      <TextInput
-        style={styles.input}
+      <StyledText>Password:</StyledText>
+      <StyledTextInput
         secureTextEntry={true}
         onChangeText={setPassword}
         value={password}
@@ -98,22 +118,11 @@ const AuthForm = () => {
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>회원가입</Text>
       </TouchableOpacity>
-    </View>
+    </AuthFormContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  text: {
-    color: color.dark,
-  },
-  input: {
-    height: 40,
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: color.gray,
-    padding: 5,
-    marginVertical: 15,
-  },
   button: {
     width: '100%',
     backgroundColor: color.primary,
