@@ -2,7 +2,7 @@ import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import Diary from '../components/screen/Diary';
-import Todo from '../components/screen/Todo';
+import Todos from '../components/screen/Todos';
 import Setting from '../components/screen/Setting';
 import StudyTimer from '../components/screen/StudyTimer';
 import Memo from '../components/screen/Memo';
@@ -12,7 +12,7 @@ import {color} from '../theme/color';
 type TabParamList = {
   Diary: undefined;
   StudyTimer: undefined;
-  Todo: undefined;
+  Todos: undefined;
   Memo: undefined;
   Setting: undefined;
 };
@@ -82,8 +82,8 @@ const MainTabNavigator = () => {
           }}
         />
         <Tab.Screen
-          name="Todo"
-          component={Todo}
+          name="Todos"
+          component={Todos}
           options={{
             title: '투두',
             tabBarLabel: ({focused}) => (
