@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {color} from '../../theme/color';
+import {color, Theme} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useUser} from '../../providers/UserProvider';
 import setIntervalWithTimeout, {
@@ -17,11 +17,20 @@ import {
 import getDisplayedTime from '../../utils/getDisplayedTime';
 import {useFocusEffect} from '@react-navigation/native';
 import DateUtil from '../../utils/DateUtil';
+import ScreenHeader from '../shared/ScreenHeader';
+import styled from 'styled-components/native';
 
 export type Subject = '국어' | '수학' | '영어' | '한국사' | '기타';
 
 const subjects: Subject[] = ['국어', '수학', '영어', '한국사', '기타'];
 const subjectColors = ['#D3165E', '#EF6825', '#FFC108', '#009148', '#00A4EC'];
+
+const TimerContainer = styled.View`
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: ${({theme}: {theme: Theme}) => theme.background};
+`;
 
 const StudyTimer = () => {
   const today = DateUtil.now();
@@ -100,6 +109,7 @@ const StudyTimer = () => {
 
   return (
     <View style={styles.timerContainer}>
+      <ScreenHeader title={'타이머'} />
       <View
         style={{
           flexDirection: 'row',

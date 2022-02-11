@@ -1,13 +1,14 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useTheme} from '@react-navigation/native';
 import Diary from '../components/screen/Diary';
 import Todos from '../components/screen/Todos';
 import Setting from '../components/screen/Setting';
 import StudyTimer from '../components/screen/StudyTimer';
 import Memo from '../components/screen/Memo';
 import {View, Text} from 'react-native';
-import {color} from '../theme/color';
+import {color, Theme} from '../theme/color';
+import styled from 'styled-components/native';
 
 type TabParamList = {
   Diary: undefined;
@@ -45,14 +46,15 @@ const TabBarLabel = ({focused, label}: {focused: boolean; label: string}) => {
 };
 
 const MainTabNavigator = () => {
+  const {colors} = useTheme();
+  console.log(colors);
   return (
     <NavigationContainer>
-      <Tab.Navigator screenOptions={{headerTitleAlign: 'center'}}>
+      <Tab.Navigator screenOptions={{headerShown: false}}>
         <Tab.Screen
           name="Diary"
           component={Diary}
           options={{
-            title: '캘린더',
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'캘린더'} />
             ),
@@ -63,7 +65,6 @@ const MainTabNavigator = () => {
           name="Memo"
           component={Memo}
           options={{
-            title: '메모',
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'메모'} />
             ),

@@ -16,6 +16,7 @@ import firestore from '@react-native-firebase/firestore';
 import Modal from 'react-native-modalbox';
 import Button from '../shared/Button';
 import Todo from '../Todo';
+import ScreenHeader from '../shared/ScreenHeader';
 
 export type TodoObj = {
   id: string;
@@ -73,6 +74,7 @@ const Todos = () => {
 
   return (
     <View style={styles.todoContainer}>
+      <ScreenHeader title={'투두'} />
       <View style={styles.selectView}>
         <Pressable
           style={[
