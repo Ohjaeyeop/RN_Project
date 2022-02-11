@@ -20,6 +20,16 @@ type TabParamList = {
 
 const Tab = createBottomTabNavigator<TabParamList>();
 
+const FocusedText = styled.Text`
+  color: ${({theme}: {theme: Theme}) => theme.text};
+  font-size: 12px;
+`;
+
+const NonFocusedText = styled.Text`
+  color: ${color.gray};
+  font-size: 12px;
+`;
+
 const TabBarIcon = ({focused}: {focused: boolean}) => {
   return (
     <View
@@ -34,23 +44,21 @@ const TabBarIcon = ({focused}: {focused: boolean}) => {
 };
 
 const TabBarLabel = ({focused, label}: {focused: boolean; label: string}) => {
-  return (
-    <Text
-      style={{
-        color: focused ? color.dark : color.gray,
-        fontSize: 12,
-      }}>
-      {label}
-    </Text>
+  return focused ? (
+    <FocusedText>{label}</FocusedText>
+  ) : (
+    <NonFocusedText>{label}</NonFocusedText>
   );
 };
 
 const MainTabNavigator = () => {
-  const {colors} = useTheme();
-  console.log(colors);
   return (
     <NavigationContainer>
-      <Tab.Navigator screenOptions={{headerShown: false}}>
+      <Tab.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarBackground: () => <View />,
+        }}>
         <Tab.Screen
           name="Diary"
           component={Diary}
