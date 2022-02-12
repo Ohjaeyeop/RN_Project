@@ -44,6 +44,7 @@ const Todos = () => {
   );
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  const [id, setId] = useState('');
   const [todos, setTodos] = useState<TodoObj[]>([]);
   const [displayedTodoType, setDisplayedTodoType] = useState<'TODO' | 'DONE'>(
     'TODO',
@@ -57,11 +58,11 @@ const Todos = () => {
     setBody('');
   }
 
-  async function editTodo(id: string, title: string, body: string) {
+  async function editTodo() {
     await todosRef.doc(id).update({title, body});
   }
 
-  async function deleteTodo(id: string) {
+  async function deleteTodo() {
     await todosRef.doc(id).delete();
   }
 
@@ -72,6 +73,7 @@ const Todos = () => {
   const handleTodoPress = (id: string, title: string, body: string) => {
     setTitle(title);
     setBody(body);
+    setId(id);
     editTodoModalRef.current?.openModal();
   };
 
@@ -172,6 +174,7 @@ const Todos = () => {
             textColor={color.gray}
             width="48%"
             onPress={() => {
+              deleteTodo();
               editTodoModalRef.current?.closeModal();
             }}
           />
@@ -181,6 +184,7 @@ const Todos = () => {
             textColor={color.white}
             width="48%"
             onPress={() => {
+              editTodo();
               editTodoModalRef.current?.closeModal();
             }}
           />

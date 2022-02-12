@@ -1,4 +1,4 @@
-import React, {useImperativeHandle, useRef, useState} from 'react';
+import React, {useImperativeHandle, useRef} from 'react';
 import {Dimensions, View} from 'react-native';
 import styled from 'styled-components/native';
 import {color, Theme} from '../../theme/color';
