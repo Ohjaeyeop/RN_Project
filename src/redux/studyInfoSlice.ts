@@ -52,12 +52,21 @@ export const updateStudyInfo = createAsyncThunk(
     date: string;
     studyInfo: StudyInfo;
   }) => {
-    await firestore()
-      .collection('StudyInfo')
-      .doc(username)
-      .collection(date)
-      .doc('Info')
-      .update(studyInfo);
+    try {
+      await firestore()
+        .collection('StudyInfo')
+        .doc(username)
+        .collection(date)
+        .doc('Info')
+        .update(studyInfo);
+    } catch {
+      await firestore()
+        .collection('StudyInfo')
+        .doc(username)
+        .collection(date)
+        .doc('Info')
+        .set(studyInfo);
+    }
 
     return studyInfo;
   },

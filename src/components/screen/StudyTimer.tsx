@@ -12,6 +12,7 @@ import {
   increment,
   selectStudyInfo,
   setIdle,
+  StudyInfo,
   updateStudyInfo,
 } from '../../redux/studyInfoSlice';
 import getDisplayedTime from '../../utils/getDisplayedTime';
@@ -19,6 +20,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import DateUtil from '../../utils/DateUtil';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
+import {current} from '@reduxjs/toolkit';
 
 export type Subject = '국어' | '수학' | '영어' | '한국사' | '기타';
 
@@ -41,52 +43,75 @@ const StyledIcon = styled(Icon)`
 const StudyTimer = () => {
   const today = DateUtil.now();
   const {user} = useUser();
-  const [isStudying, setIsStudying] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState<Subject>();
   const [selectedDate, setSelectedDate] = useState(today);
+  const dateRef = useRef(selectedDate);
   const [offset, setOffset] = useState(0);
   const handler = useRef(new TimeoutHandler()).current;
-
-  const studyInfo = useAppSelector(selectStudyInfo);
-  const studyInfoStatus = useAppSelector(state => state.studyInfo.status);
   const dispatch = useAppDispatch();
 
+  const studyInfo = useAppSelector(selectStudyInfo);
+  const studyInfoRef = useRef<StudyInfo>(studyInfo);
+  const studyInfoStatus = useAppSelector(state => state.studyInfo.status);
+
+  const startStudy = (subject: Subject) => {
+    setSelectedSubject(subject);
+    startTimer(subject);
+  };
+
+  const stopStudy = () => {
+    setSelectedSubject(undefined);
+  };
+
   useEffect(() => {
-    if (user) {
-      dispatch(
-        getStudyInfo({username: user.username, date: selectedDate.toString()}),
-      );
-    }
-  }, [dispatch, selectedDate, user]);
+    user &&
+      dispatch(getStudyInfo({username: user.username, date: today.toString()}));
+  }, [dispatch, today, user]);
 
   useFocusEffect(
     useCallback(() => {
       return () => {
-        setSelectedSubject(undefined);
-        setIsStudying(false);
+        stopStudy();
+        user &&
+          dispatch(
+            updateStudyInfo({
+              username: user.username,
+              date: today.toString(),
+              studyInfo: studyInfoRef.current,
+            }),
+          );
         handler.clear();
-        dispatch(setIdle());
       };
-    }, [dispatch, handler]),
+    }, [dispatch, handler, today, user]),
   );
 
-  useEffect(() => {
-    user &&
-      studyInfoStatus === 'succeeded' &&
-      selectedDate === today &&
-      dispatch(
-        updateStudyInfo({
-          username: user.username,
-          date: today.toString(),
-          studyInfo,
-        }),
-      );
-  }, [dispatch, selectedDate, studyInfo, studyInfoStatus, today, user]);
-
   const changeDate = (change: number) => {
+    if (selectedDate === today) {
+      stopStudy();
+      user &&
+        dispatch(
+          updateStudyInfo({
+            username: user.username,
+            date: today.toString(),
+            studyInfo: studyInfoRef.current,
+          }),
+        );
+    }
+    const changedDate = DateUtil.dateFromNow(offset + change);
+    user &&
+      dispatch(
+        getStudyInfo({username: user.username, date: changedDate.toString()}),
+      );
     setOffset(offset + change);
-    setSelectedDate(DateUtil.dateFromNow(offset + change));
+    setSelectedDate(changedDate);
+    dateRef.current = changedDate;
   };
+
+  useEffect(() => {
+    if (selectedDate === today) {
+      studyInfoRef.current = studyInfo;
+    }
+  }, [selectedDate, studyInfo, today]);
 
   const startTimer = (subject: Subject) => {
     setIntervalWithTimeout(
@@ -102,14 +127,12 @@ const StudyTimer = () => {
     if (selectedDate !== today) {
       return;
     }
+
     handler.clear();
     if (subject === selectedSubject) {
-      setSelectedSubject(undefined);
-      setIsStudying(!isStudying);
+      stopStudy();
     } else {
-      setSelectedSubject(subject);
-      setIsStudying(true);
-      startTimer(subject);
+      startStudy(subject);
     }
   };
 
