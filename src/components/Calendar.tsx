@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {Theme} from '../theme/color';
+import {color, Theme} from '../theme/color';
 import DateUtil from '../utils/DateUtil';
 import {View, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -10,11 +10,21 @@ const CalendarView = styled.View`
   border-radius: 12px;
   width: 100%;
   height: 400px;
-  padding: 24px;
+  padding: 24px 15px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
 `;
 
-const StyledIcon = styled(Icon)`
-  color: ${({theme}: {theme: Theme}) => theme.text};
+const RowBox = styled.View`
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const TextBox = styled.View`
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
 `;
 
 const days = ['일', '월', '화', '수', '목', '금', '토'];
@@ -22,24 +32,81 @@ const days = ['일', '월', '화', '수', '목', '금', '토'];
 const Calendar = () => {
   const today = DateUtil.now();
   const [selectedDate, setSelectedDate] = useState<number>(today);
-  const lastDate = useState(DateUtil.getLastDate(2022, 2));
+
+  const lastDate = DateUtil.getLastDate(selectedDate);
+  const lastDateOfPrevMonth = DateUtil.getLastDateOfPrevMonth(selectedDate);
+  const firstDate = DateUtil.getFirstDay(selectedDate);
+
+  let displayedDate: number[] = [];
+  for (let i = firstDate - 1; i >= 0; i--) {
+    displayedDate.push(lastDateOfPrevMonth - i);
+  }
+  for (let i = Math.floor(lastDate / 100) * 100 + 1; i <= lastDate; i++) {
+    displayedDate.push(i);
+  }
+  const row = Math.ceil(displayedDate.length / 7) + 1;
 
   return (
     <CalendarView>
-      <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-        <StyledIcon name={'arrow-left'} size={20} onPress={() => {}} />
-        <Text style={{fontSize: 18, fontWeight: '700'}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginBottom: 30,
+        }}>
+        <Icon
+          name={'arrow-left'}
+          size={25}
+          color={color.primary}
+          onPress={() => {}}
+        />
+        <Text style={{fontSize: 18, fontWeight: '700', marginHorizontal: 12}}>
           {DateUtil.yearMonth(selectedDate)}
         </Text>
-        <StyledIcon name={'arrow-right'} size={20} onPress={() => {}} />
+        <Icon
+          name={'arrow-right'}
+          size={25}
+          color={color.primary}
+          onPress={() => {}}
+        />
       </View>
-      {days.map(day => (
-        <View key={day}>
-          <Text>{day}</Text>
-        </View>
-      ))}
-      {[...new Array(6).keys()].map(() => {
-        return days.map(() => {});
+      <RowBox>
+        {days.map(day => (
+          <TextBox key={day}>
+            <Text
+              style={{
+                color: color.navy,
+              }}>
+              {day}
+            </Text>
+          </TextBox>
+        ))}
+      </RowBox>
+
+      {[...new Array(row).keys()].map(i => {
+        return (
+          <RowBox key={i}>
+            {[...new Array(7).keys()].map(j => {
+              const index = i * 7 + j;
+              return (
+                <TextBox key={index + 7}>
+                  <Text
+                    style={{
+                      color:
+                        index >= firstDate && index < displayedDate.length
+                          ? color.gray
+                          : color.lightGray,
+                    }}>
+                    {index < displayedDate.length
+                      ? displayedDate[index] % 100
+                      : index - displayedDate.length + 1}
+                  </Text>
+                </TextBox>
+              );
+            })}
+          </RowBox>
+        );
       })}
     </CalendarView>
   );

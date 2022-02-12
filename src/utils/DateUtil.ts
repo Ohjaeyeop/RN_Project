@@ -12,16 +12,26 @@ class DateUtil {
     return year * 10000 + month * 100 + date;
   }
 
+  getYear(d: number) {
+    return Math.floor(d / 10000);
+  }
+
+  getMonth(d: number) {
+    return Math.floor((d % 10000) / 100);
+  }
+
+  getDate(d: number) {
+    return d % 100;
+  }
+
   yearMonth(d: number) {
-    const year = Math.floor(d / 10000);
-    const month = Math.floor((d % 10000) / 100);
-    return `${year}년 ${month}월`;
+    return `${this.getYear(d)}년 ${this.getMonth(d)}월`;
   }
 
   monthDateDay(d: number) {
-    const year = Math.floor(d / 10000);
-    const month = Math.floor((d % 10000) / 100);
-    const date = d % 100;
+    const year = this.getYear(d);
+    const month = this.getMonth(d);
+    const date = this.getDate(d);
     const day =
       this.days[
         new Date(
@@ -39,8 +49,20 @@ class DateUtil {
     return this.dateToNumber(newDate);
   }
 
-  getLastDate(year: number, month: number) {
-    return new Date(year, month, 0).getDate();
+  getLastDate(d: number) {
+    return this.dateToNumber(new Date(this.getYear(d), this.getMonth(d), 0));
+  }
+
+  getLastDateOfPrevMonth(d: number) {
+    const firstDayOfMonth = new Date(this.getYear(d), this.getMonth(d) - 1, 1);
+    const lastMonth = new Date(
+      firstDayOfMonth.setDate(firstDayOfMonth.getDate() - 1),
+    );
+    return this.dateToNumber(lastMonth);
+  }
+
+  getFirstDay(d: number) {
+    return new Date(this.getYear(d), this.getMonth(d), 1).getDay();
   }
 }
 
