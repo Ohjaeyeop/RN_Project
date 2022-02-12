@@ -1,11 +1,20 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
-import {color} from '../../theme/color';
 
-const Button = ({text, onPress}: {text: string; onPress: () => void}) => {
+type Props = {
+  text: string;
+  backgroundColor: string;
+  textColor: string;
+  width: string;
+  onPress: () => void;
+};
+
+const Button = ({text, backgroundColor, textColor, width, onPress}: Props) => {
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Text style={{color: color.white, fontSize: 18, fontWeight: '700'}}>
+    <TouchableOpacity
+      style={[styles.button, {backgroundColor: backgroundColor, width: width}]}
+      onPress={onPress}>
+      <Text style={{color: textColor, fontSize: 18, fontWeight: '700'}}>
         {text}
       </Text>
     </TouchableOpacity>
@@ -14,13 +23,11 @@ const Button = ({text, onPress}: {text: string; onPress: () => void}) => {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: color.primary,
     borderRadius: 30,
     padding: 18,
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 16,
-    width: '100%',
   },
 });
 

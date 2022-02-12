@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
@@ -16,6 +16,7 @@ import Button from '../shared/Button';
 import Todo from '../Todo';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
+import TodoModal, {TodoModalRef} from '../shared/TodoModal';
 
 export type TodoObj = {
   id: string;
@@ -34,49 +35,21 @@ const StyledText = styled.Text`
   font-size: 16px;
 `;
 
-const TodoMoal = styled(Modal)`
-  background-color: ${({theme}: {theme: Theme}) => theme.background};
-  height: ${Dimensions.get('window').height * 0.6}px;
-  border-radius: 10px;
-  padding: 20px 24px;
-`;
-
-const TodoTitleInput = styled.TextInput.attrs(({theme}: {theme: Theme}) => ({
-  placeholderTextColor: theme.text,
-}))`
-  font-size: 16px;
-  font-weight: 700;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin-bottom: 10px;
-  color: ${({theme}: {theme: Theme}) => theme.text};
-`;
-
-const TodoBodyInput = styled.TextInput.attrs(() => ({
-  placeholderTextColor: color.gray,
-}))`
-  background-color: ${({theme}: {theme: Theme}) => theme.box};
-  padding: 8px;
-  font-size: 16px;
-  border-radius: 5px;
-  margin-bottom: 20px;
-  color: ${({theme}: {theme: Theme}) => theme.text};
-`;
-
 const Todos = () => {
-  console.log(5);
   const {user} = useUser();
-  const todosRef = firestore()
-    .collection('Todo')
-    .doc(user?.username)
-    .collection('todos');
+  const todosRef = useMemo(
+    () =>
+      firestore().collection('Todo').doc(user?.username).collection('todos'),
+    [user?.username],
+  );
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [todos, setTodos] = useState<TodoObj[]>([]);
   const [displayedTodoType, setDisplayedTodoType] = useState<'TODO' | 'DONE'>(
     'TODO',
   );
-  const modalRef = useRef<Modal>(null);
+  const addTodoModalRef = useRef<TodoModalRef>(null);
+  const editTodoModalRef = useRef<TodoModalRef>(null);
 
   async function addTodo() {
     await todosRef.add({title, body, complete: false});
@@ -96,7 +69,13 @@ const Todos = () => {
     await todosRef.doc(id).update({complete: !complete});
   }
 
-  /*  useEffect(() => {
+  const handleTodoPress = (id: string, title: string, body: string) => {
+    setTitle(title);
+    setBody(body);
+    editTodoModalRef.current?.openModal();
+  };
+
+  useEffect(() => {
     const subscriber = todosRef.onSnapshot(querySnapshot => {
       const list: TodoObj[] = [];
       querySnapshot?.forEach(doc => {
@@ -107,7 +86,7 @@ const Todos = () => {
     });
 
     return () => subscriber();
-  }, []);*/
+  }, [todosRef]);
 
   return (
     <TodoContainer>
@@ -152,6 +131,7 @@ const Todos = () => {
           <Todo
             toggleComplete={toggleComplete}
             type={displayedTodoType}
+            onPress={handleTodoPress}
             {...item}
           />
         )}
@@ -159,46 +139,53 @@ const Todos = () => {
       />
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => modalRef.current?.open()}>
+        onPress={() => addTodoModalRef.current?.openModal()}>
         <Icon name="add" color={color.white} size={25} />
       </TouchableOpacity>
-      <TodoMoal
-        entry="bottom"
-        position="bottom"
-        swipeToClose={false}
-        coverScreen={true}
-        backdropOpacity={0.5}
-        ref={modalRef}
-        style={styles.modal}>
-        <View>
-          <StyledText
-            style={{
-              fontWeight: '700',
-              marginBottom: 16,
-            }}>
-            TODO에 할 일을 추가합니다.
-          </StyledText>
-          <TodoTitleInput
-            autoCapitalize="none"
-            placeholder="제목을 적어주세요"
-            value={title}
-            onChangeText={setTitle}
-          />
-          <TodoBodyInput
-            autoCapitalize="none"
-            placeholder="할 일을 적어주세요"
-            value={body}
-            onChangeText={setBody}
+      <TodoModal
+        title={title}
+        body={body}
+        setTitle={setTitle}
+        setBody={setBody}
+        ref={addTodoModalRef}>
+        <Button
+          text="저장하기"
+          backgroundColor={color.primary}
+          textColor={color.white}
+          width="100%"
+          onPress={() => {
+            addTodo();
+            addTodoModalRef.current?.closeModal();
+          }}
+        />
+      </TodoModal>
+      <TodoModal
+        title={title}
+        body={body}
+        setTitle={setTitle}
+        setBody={setBody}
+        ref={editTodoModalRef}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Button
+            text="삭제하기"
+            backgroundColor={color.lightGray}
+            textColor={color.gray}
+            width="48%"
+            onPress={() => {
+              editTodoModalRef.current?.closeModal();
+            }}
           />
           <Button
             text="저장하기"
+            backgroundColor={color.primary}
+            textColor={color.white}
+            width="48%"
             onPress={() => {
-              addTodo();
-              modalRef.current?.close();
+              editTodoModalRef.current?.closeModal();
             }}
           />
         </View>
-      </TodoMoal>
+      </TodoModal>
     </TodoContainer>
   );
 };
@@ -225,12 +212,6 @@ const styles = StyleSheet.create({
     borderColor: color.lightGray,
     height: 56,
     paddingTop: 24,
-  },
-  modal: {
-    height: Dimensions.get('window').height * 0.6,
-    borderRadius: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 24,
   },
 });
 
