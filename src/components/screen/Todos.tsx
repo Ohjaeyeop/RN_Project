@@ -64,6 +64,7 @@ const TodoBodyInput = styled.TextInput.attrs(() => ({
 `;
 
 const Todos = () => {
+  console.log(5);
   const {user} = useUser();
   const todosRef = firestore()
     .collection('Todo')
@@ -72,7 +73,6 @@ const Todos = () => {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [todos, setTodos] = useState<TodoObj[]>([]);
-  const [loading, setLoading] = useState(true);
   const [displayedTodoType, setDisplayedTodoType] = useState<'TODO' | 'DONE'>(
     'TODO',
   );
@@ -96,19 +96,18 @@ const Todos = () => {
     await todosRef.doc(id).update({complete: !complete});
   }
 
-  useEffect(() => {
-    return todosRef.onSnapshot(querySnapshot => {
+  /*  useEffect(() => {
+    const subscriber = todosRef.onSnapshot(querySnapshot => {
       const list: TodoObj[] = [];
-      querySnapshot.forEach(doc => {
+      querySnapshot?.forEach(doc => {
         const {title, body, complete} = doc.data();
         list.push({id: doc.id, title, body, complete});
       });
       setTodos(list);
-      if (loading) {
-        setLoading(false);
-      }
     });
-  }, [loading, todosRef]);
+
+    return () => subscriber();
+  }, []);*/
 
   return (
     <TodoContainer>

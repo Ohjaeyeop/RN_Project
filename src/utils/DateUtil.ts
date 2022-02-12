@@ -12,6 +12,12 @@ class DateUtil {
     return year * 10000 + month * 100 + date;
   }
 
+  yearMonth(d: number) {
+    const year = Math.floor(d / 10000);
+    const month = Math.floor((d % 10000) / 100);
+    return `${year}년 ${month}월`;
+  }
+
   monthDateDay(d: number) {
     const year = Math.floor(d / 10000);
     const month = Math.floor((d % 10000) / 100);
@@ -31,6 +37,10 @@ class DateUtil {
     const now = new Date();
     const newDate = new Date(now.setDate(now.getDate() + offset));
     return this.dateToNumber(newDate);
+  }
+
+  getLastDate(year: number, month: number) {
+    return new Date(year, month, 0).getDate();
   }
 }
 

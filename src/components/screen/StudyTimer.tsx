@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {color, Theme} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useUser} from '../../providers/UserProvider';
@@ -57,7 +57,7 @@ const StudyTimer = () => {
         getStudyInfo({username: user.username, date: selectedDate.toString()}),
       );
     }
-  }, [dispatch, selectedDate, today, user]);
+  }, [dispatch, selectedDate, user]);
 
   useFocusEffect(
     useCallback(() => {
@@ -81,7 +81,7 @@ const StudyTimer = () => {
           studyInfo,
         }),
       );
-  }, [dispatch, studyInfo, studyInfoStatus, today, user]);
+  }, [dispatch, selectedDate, studyInfo, studyInfoStatus, today, user]);
 
   const changeDate = (change: number) => {
     setOffset(offset + change);

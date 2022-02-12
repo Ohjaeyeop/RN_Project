@@ -1,12 +1,6 @@
 import React, {useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import {
-  TextInput,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import {Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import {color, Theme} from '../../theme/color';
 import {useUser} from '../../providers/UserProvider';
 import styled from 'styled-components/native';
