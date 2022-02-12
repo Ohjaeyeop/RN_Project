@@ -27,23 +27,17 @@ const initialState: State = {
 export const getStudyInfo = createAsyncThunk(
   'studyInfo/getStudyInfo',
   async ({username, date}: {username: string; date: string}) => {
-    const querySnapshot = await firestore()
-      .collection('StudyInfo')
-      .doc(username)
-      .collection(date)
-      .get();
-    if (querySnapshot.size === 0) {
-      await firestore()
+    try {
+      const studyInfoRef = await firestore()
         .collection('StudyInfo')
         .doc(username)
         .collection(date)
-        .doc('Info')
-        .set(initialState.studyInfo);
+        .get();
 
+      return studyInfoRef.docs[0].data() as StudyInfo;
+    } catch {
       return initialState.studyInfo;
     }
-
-    return querySnapshot.docs[0].data() as StudyInfo;
   },
 );
 
