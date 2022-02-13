@@ -28,52 +28,60 @@ const ChartBySubject = ({date}: {date: number}) => {
         }}>
         과목별
       </Text>
-      {subjects.map(subject => {
-        return (
-          <View key={subject}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginBottom: 4,
-              }}>
-              <Text style={{color: 'black'}}>{subject}</Text>
-              <Text
-                style={{
-                  color: 'black',
-                }}>
-                {getDisplayedTime(studyInfo[subject])}
-              </Text>
-            </View>
-            <View
-              style={{
-                width: '100%',
-                height: 14,
-                borderRadius: 999,
-                backgroundColor: color.lightGray,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: 14,
-              }}>
-              <Text style={{fontSize: 10, fontWeight: '700'}}>
-                {Math.round((studyInfo[subject] / studyInfo.total) * 100)}%
-              </Text>
+      {studyInfo.total === 0 ? (
+        <View style={{justifyContent: 'center', alignItems: 'center'}}>
+          <Text style={{color: color.gray, fontSize: 16}}>
+            학습 기록이 없어요
+          </Text>
+        </View>
+      ) : (
+        subjects.map(subject => {
+          return (
+            <View key={subject}>
               <View
                 style={{
-                  position: 'absolute',
-                  left: 0,
-                  backgroundColor: subjectColors[subject],
-                  borderRadius: 999,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginBottom: 4,
+                }}>
+                <Text style={{color: 'black'}}>{subject}</Text>
+                <Text
+                  style={{
+                    color: 'black',
+                  }}>
+                  {getDisplayedTime(studyInfo[subject])}
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: '100%',
                   height: 14,
-                  width: `${Math.round(
-                    (studyInfo[subject] / studyInfo.total) * 100,
-                  )}%`,
-                }}
-              />
+                  borderRadius: 999,
+                  backgroundColor: color.lightGray,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 14,
+                }}>
+                <Text style={{fontSize: 10, fontWeight: '700'}}>
+                  {Math.round((studyInfo[subject] / studyInfo.total) * 100)}%
+                </Text>
+                <View
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    backgroundColor: subjectColors[subject],
+                    borderRadius: 999,
+                    height: 14,
+                    width: `${Math.round(
+                      (studyInfo[subject] / studyInfo.total) * 100,
+                    )}%`,
+                  }}
+                />
+              </View>
             </View>
-          </View>
-        );
-      })}
+          );
+        })
+      )}
     </View>
   );
 };

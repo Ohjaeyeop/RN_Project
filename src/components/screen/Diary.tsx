@@ -17,6 +17,10 @@ const Diary = () => {
   const today = DateUtil.now();
   const [selectedDate, setSelectedDate] = useState(today);
 
+  const selectDate = (date: number) => {
+    setSelectedDate(date);
+  };
+
   return (
     <DiaryContainer>
       <ScreenHeader title={'캘린더'} />
