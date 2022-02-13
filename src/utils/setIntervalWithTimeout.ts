@@ -22,7 +22,7 @@ export default function setIntervalWithTimeout(
   let expected = Date.now() + intervalMs;
 
   const timeout = () => {
-    const delta = Date.now() - expected;
+    const delta = Math.max(0, Date.now() - expected);
     expected += intervalMs;
     handleWrapper.handler = setTimeout(() => {
       callback(() => {

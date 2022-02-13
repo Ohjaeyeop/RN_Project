@@ -16,7 +16,6 @@ import {
   getStudyInfo,
   increment,
   selectStudyInfo,
-  setIdle,
   StudyInfo,
   updateStudyInfo,
 } from '../../redux/studyInfoSlice';
@@ -59,8 +58,8 @@ const StudyTimer = () => {
   const studyInfoStatus = useAppSelector(state => state.studyInfo.status);
 
   const startStudy = (subject: Subject) => {
-    setSelectedSubject(subject);
     startTimer(subject);
+    setSelectedSubject(subject);
   };
 
   const stopStudy = () => {

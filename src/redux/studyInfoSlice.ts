@@ -9,7 +9,7 @@ export type StudyInfo = {
 
 type State = {
   studyInfo: StudyInfo;
-  status: 'idle' | 'loading' | 'succeeded';
+  status: 'loading' | 'succeeded';
 };
 
 const initialState: State = {
@@ -21,7 +21,7 @@ const initialState: State = {
     기타: 0,
     total: 0,
   },
-  status: 'idle',
+  status: 'loading',
 };
 
 export const getStudyInfo = createAsyncThunk(
@@ -79,9 +79,6 @@ export const studyInfoSlice = createSlice({
       state.studyInfo[action.payload] += 1;
       state.studyInfo.total += 1;
     },
-    setIdle: state => {
-      state.status = 'idle';
-    },
   },
   extraReducers: builder => {
     builder.addCase(getStudyInfo.pending, state => {
@@ -90,6 +87,7 @@ export const studyInfoSlice = createSlice({
     builder.addCase(getStudyInfo.fulfilled, (state, action) => {
       state.status = 'succeeded';
       state.studyInfo = action.payload;
+      console.log(state.studyInfo);
     });
     builder.addCase(updateStudyInfo.fulfilled, (state, action) => {
       state.studyInfo = action.payload;
@@ -97,6 +95,6 @@ export const studyInfoSlice = createSlice({
   },
 });
 
-export const {increment, setIdle} = studyInfoSlice.actions;
+export const {increment} = studyInfoSlice.actions;
 export const selectStudyInfo = (state: RootState) => state.studyInfo.studyInfo;
 export default studyInfoSlice.reducer;
