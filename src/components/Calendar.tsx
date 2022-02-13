@@ -23,7 +23,7 @@ const RowBox = styled.View`
   justify-content: space-between;
 `;
 
-const TextBox = styled.View`
+const TextBox = styled.Pressable`
   width: 40px;
   height: 40px;
   align-items: center;
@@ -36,17 +36,23 @@ const Mark = styled.View`
   border-radius: 3px;
   background-color: ${color.primary};
   position: absolute;
-  top: 0;
+  top: 1px;
 `;
 
 const days = ['일', '월', '화', '수', '목', '금', '토'];
 
-const Calendar = ({today}: {today: number}) => {
+type Props = {
+  today: number;
+  selectedDate: number;
+  selectDate: (date: number) => void;
+};
+
+const Calendar = ({today, selectedDate, selectDate}: Props) => {
   const {user} = useUser();
-  const [selectedDate, setSelectedDate] = useState<number>(today);
-  const firstDay = useRef(selectedDate);
-  const [displayedDate, setDisplayedDate] = useState<number[]>([]);
-  const [studiedDate, setStudiedDate] = useState<number[]>([]);
+  const [lastDate, setLastDate] = useState<number>(today);
+  const firstDay = useRef(0);
+  const [displayedDates, setDisplayedDates] = useState<number[]>([]);
+  const [studiedDates, setStudiedDates] = useState<number[]>([]);
 
   const getStudyInfosByMonth = useCallback(
     async (date: number) => {
@@ -65,7 +71,7 @@ const Calendar = ({today}: {today: number}) => {
           dates.push(i);
         }
       }
-      setStudiedDate(dates);
+      setStudiedDates(dates);
     },
     [user],
   );
@@ -81,27 +87,27 @@ const Calendar = ({today}: {today: number}) => {
     for (let i = Math.floor(lastDate / 100) * 100 + 1; i <= lastDate; i++) {
       dates.push(i);
     }
-    setDisplayedDate(dates);
+    setDisplayedDates(dates);
   }, []);
 
   useFocusEffect(
     useCallback(() => {
-      firstDay.current = DateUtil.getFirstDay(selectedDate);
-      getCalendarInfo(selectedDate);
-      getStudyInfosByMonth(selectedDate);
-    }, [getCalendarInfo, getStudyInfosByMonth, selectedDate]),
+      firstDay.current = DateUtil.getFirstDay(lastDate);
+      getCalendarInfo(lastDate);
+      getStudyInfosByMonth(lastDate);
+    }, [getCalendarInfo, getStudyInfosByMonth, lastDate]),
   );
 
   const changeToPrevMonth = () => {
-    const changedDate = DateUtil.getLastDateOfPrevMonth(selectedDate);
-    setSelectedDate(changedDate);
+    const changedDate = DateUtil.getLastDateOfPrevMonth(lastDate);
+    setLastDate(changedDate);
   };
 
   const changeToNextMonth = () => {
-    const changedDate = DateUtil.getLastDateOfNextMonth(selectedDate);
+    const changedDate = DateUtil.getLastDateOfNextMonth(lastDate);
     DateUtil.getMonth(changedDate) === DateUtil.getMonth(today)
-      ? setSelectedDate(today)
-      : setSelectedDate(changedDate);
+      ? setLastDate(today)
+      : setLastDate(changedDate);
   };
 
   return (
@@ -120,13 +126,13 @@ const Calendar = ({today}: {today: number}) => {
           onPress={changeToPrevMonth}
         />
         <Text style={{fontSize: 18, fontWeight: '700', marginHorizontal: 12}}>
-          {DateUtil.yearMonth(selectedDate)}
+          {DateUtil.yearMonth(lastDate)}
         </Text>
         <Icon
           name={'arrow-right'}
           size={25}
-          color={selectedDate !== today ? color.primary : color.gray}
-          onPress={selectedDate !== today ? changeToNextMonth : undefined}
+          color={lastDate !== today ? color.primary : color.gray}
+          onPress={lastDate !== today ? changeToNextMonth : undefined}
         />
       </View>
       <RowBox>
@@ -142,32 +148,43 @@ const Calendar = ({today}: {today: number}) => {
         ))}
       </RowBox>
 
-      {[...new Array(Math.ceil(displayedDate.length / 7) + 1).keys()].map(i => {
-        return (
-          <RowBox key={i}>
-            {[...new Array(7).keys()].map(j => {
-              const index = i * 7 + j;
-              return (
-                <TextBox key={index + 7}>
-                  {studiedDate.includes(displayedDate[index]) && <Mark />}
-                  <Text
-                    style={{
-                      color:
-                        index >= firstDay.current &&
-                        index < displayedDate.length
-                          ? color.gray
-                          : color.lightGray,
-                    }}>
-                    {index < displayedDate.length
-                      ? displayedDate[index] % 100
-                      : index - displayedDate.length + 1}
-                  </Text>
-                </TextBox>
-              );
-            })}
-          </RowBox>
-        );
-      })}
+      {[...new Array(Math.ceil(displayedDates.length / 7) + 1).keys()].map(
+        i => {
+          return (
+            <RowBox key={i}>
+              {[...new Array(7).keys()].map(j => {
+                const index = i * 7 + j;
+                return (
+                  <TextBox
+                    key={index + 7}
+                    style={
+                      displayedDates[index] === selectedDate && {
+                        borderRadius: 20,
+                        borderWidth: 2,
+                        borderColor: color.subPrimary,
+                      }
+                    }
+                    onPress={() => selectDate(displayedDates[index])}>
+                    {studiedDates.includes(displayedDates[index]) && <Mark />}
+                    <Text
+                      style={{
+                        color:
+                          index >= firstDay.current &&
+                          index < displayedDates.length
+                            ? color.gray
+                            : color.lightGray,
+                      }}>
+                      {index < displayedDates.length
+                        ? displayedDates[index] % 100
+                        : index - displayedDates.length + 1}
+                    </Text>
+                  </TextBox>
+                );
+              })}
+            </RowBox>
+          );
+        },
+      )}
     </CalendarView>
   );
 };

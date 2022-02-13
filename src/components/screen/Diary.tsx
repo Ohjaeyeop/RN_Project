@@ -24,7 +24,11 @@ const Diary = () => {
   return (
     <DiaryContainer>
       <ScreenHeader title={'캘린더'} />
-      <Calendar today={today} />
+      <Calendar
+        today={today}
+        selectedDate={selectedDate}
+        selectDate={selectDate}
+      />
       <ChartBySubject date={selectedDate} />
     </DiaryContainer>
   );
