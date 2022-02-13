@@ -20,7 +20,6 @@ import {useFocusEffect} from '@react-navigation/native';
 import DateUtil from '../../utils/DateUtil';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
-import {current} from '@reduxjs/toolkit';
 
 export type Subject = '국어' | '수학' | '영어' | '한국사' | '기타';
 

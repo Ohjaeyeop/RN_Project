@@ -1,9 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components/native';
 import {color, Theme} from '../theme/color';
 import DateUtil from '../utils/DateUtil';
 import {View, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import firestore from '@react-native-firebase/firestore';
+import {useUser} from '../providers/UserProvider';
 
 const CalendarView = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.background};
@@ -30,8 +32,20 @@ const TextBox = styled.View`
 const days = ['일', '월', '화', '수', '목', '금', '토'];
 
 const Calendar = () => {
+  const {user} = useUser();
   const today = DateUtil.now();
   const [selectedDate, setSelectedDate] = useState<number>(today);
+
+  const getStudyInfosByMonth = async () => {
+    if (user) {
+      const info = await firestore()
+        .collection('StudyInfo')
+        .doc(user.username)
+        .collection();
+
+      console.log(info);
+    }
+  };
 
   const lastDate = DateUtil.getLastDate(selectedDate);
   const lastDateOfPrevMonth = DateUtil.getLastDateOfPrevMonth(selectedDate);
@@ -46,6 +60,18 @@ const Calendar = () => {
   }
   const row = Math.ceil(displayedDate.length / 7) + 1;
 
+  const changeToPrevMonth = () => {
+    const changedDate = DateUtil.getLastDateOfPrevMonth(selectedDate);
+    setSelectedDate(changedDate);
+  };
+
+  const changeToNextMonth = () => {
+    const changedDate = DateUtil.getLastDateOfNextMonth(selectedDate);
+    DateUtil.getMonth(changedDate) === DateUtil.getMonth(today)
+      ? setSelectedDate(today)
+      : setSelectedDate(changedDate);
+  };
+
   return (
     <CalendarView>
       <View
@@ -59,7 +85,7 @@ const Calendar = () => {
           name={'arrow-left'}
           size={25}
           color={color.primary}
-          onPress={() => {}}
+          onPress={changeToPrevMonth}
         />
         <Text style={{fontSize: 18, fontWeight: '700', marginHorizontal: 12}}>
           {DateUtil.yearMonth(selectedDate)}
@@ -67,8 +93,8 @@ const Calendar = () => {
         <Icon
           name={'arrow-right'}
           size={25}
-          color={color.primary}
-          onPress={() => {}}
+          color={selectedDate !== today ? color.primary : color.gray}
+          onPress={selectedDate !== today ? changeToNextMonth : undefined}
         />
       </View>
       <RowBox>

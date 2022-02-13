@@ -61,8 +61,16 @@ class DateUtil {
     return this.dateToNumber(lastMonth);
   }
 
+  getLastDateOfNextMonth(d: number) {
+    const firstDayOfMonth = new Date(this.getYear(d), this.getMonth(d) + 1, 1);
+    const lastMonth = new Date(
+      firstDayOfMonth.setDate(firstDayOfMonth.getDate() - 1),
+    );
+    return this.dateToNumber(lastMonth);
+  }
+
   getFirstDay(d: number) {
-    return new Date(this.getYear(d), this.getMonth(d), 1).getDay();
+    return new Date(this.getYear(d), this.getMonth(d) - 1, 1).getDay();
   }
 }
 
