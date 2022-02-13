@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import styled from 'styled-components/native';
 import {color, Theme} from '../theme/color';
 import DateUtil from '../utils/DateUtil';
@@ -14,6 +14,7 @@ const CalendarView = styled.View`
   width: 100%;
   padding: 24px 15px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
+  margin-bottom: 24px;
 `;
 
 const RowBox = styled.View`
@@ -40,9 +41,8 @@ const Mark = styled.View`
 
 const days = ['일', '월', '화', '수', '목', '금', '토'];
 
-const Calendar = () => {
+const Calendar = ({today}: {today: number}) => {
   const {user} = useUser();
-  const today = DateUtil.now();
   const [selectedDate, setSelectedDate] = useState<number>(today);
   const firstDay = useRef(selectedDate);
   const [displayedDate, setDisplayedDate] = useState<number[]>([]);

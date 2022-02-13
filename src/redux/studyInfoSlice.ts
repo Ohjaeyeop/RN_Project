@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {Subject} from '../components/screen/StudyTimer';
+import {Subject} from '../data/study';
 import {RootState} from './store';
 import firestore from '@react-native-firebase/firestore';
 

@@ -24,11 +24,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import DateUtil from '../../utils/DateUtil';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
-
-export type Subject = '국어' | '수학' | '영어' | '한국사' | '기타';
-
-const subjects: Subject[] = ['국어', '수학', '영어', '한국사', '기타'];
-const subjectColors = ['#D3165E', '#EF6825', '#FFC108', '#009148', '#00A4EC'];
+import {Subject, subjectColors, subjects} from '../../data/study';
 
 const TimerContainer = styled.View`
   flex: 1;
@@ -171,7 +167,7 @@ const StudyTimer = () => {
             </StyledText>
           </View>
           <View style={styles.subjectBox}>
-            {subjects.map((subject, index) => (
+            {subjects.map(subject => (
               <View key={subject} style={styles.subjectLine}>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <TouchableOpacity
@@ -179,7 +175,7 @@ const StudyTimer = () => {
                       width: 28,
                       height: 28,
                       borderRadius: 14,
-                      backgroundColor: subjectColors[index],
+                      backgroundColor: subjectColors[subject],
                       marginRight: 12,
                       justifyContent: 'center',
                       alignItems: 'center',

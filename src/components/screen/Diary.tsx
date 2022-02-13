@@ -1,22 +1,27 @@
-import React from 'react';
+import React, {useState} from 'react';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
-import {Theme} from '../../theme/color';
+import {color, Theme} from '../../theme/color';
 import Calendar from '../Calendar';
-import {View} from 'react-native';
+import {View, Text} from 'react-native';
+import DateUtil from '../../utils/DateUtil';
+import ChartBySubject from '../ChartBySubject';
 
-const DiaryContainer = styled.View`
+const DiaryContainer = styled.ScrollView`
   flex: 1;
+  padding: 20px;
   background-color: ${({theme}: {theme: Theme}) => theme.background};
 `;
 
 const Diary = () => {
+  const today = DateUtil.now();
+  const [selectedDate, setSelectedDate] = useState(today);
+
   return (
     <DiaryContainer>
       <ScreenHeader title={'캘린더'} />
-      <View style={{paddingHorizontal: 20}}>
-        <Calendar />
-      </View>
+      <Calendar today={today} />
+      <ChartBySubject date={selectedDate} />
     </DiaryContainer>
   );
 };
