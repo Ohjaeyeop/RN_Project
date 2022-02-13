@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import styled from 'styled-components/native';
 import {color, Theme} from '../theme/color';
 import DateUtil from '../utils/DateUtil';
@@ -6,12 +6,12 @@ import {View, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../providers/UserProvider';
+import {useFocusEffect} from '@react-navigation/native';
 
 const CalendarView = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.background};
   border-radius: 12px;
   width: 100%;
-  height: 400px;
   padding: 24px 15px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
 `;
@@ -29,36 +29,68 @@ const TextBox = styled.View`
   justify-content: center;
 `;
 
+const Mark = styled.View`
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background-color: ${color.primary};
+  position: absolute;
+  top: 0;
+`;
+
 const days = ['일', '월', '화', '수', '목', '금', '토'];
 
 const Calendar = () => {
   const {user} = useUser();
   const today = DateUtil.now();
   const [selectedDate, setSelectedDate] = useState<number>(today);
+  const firstDay = useRef(selectedDate);
+  const [displayedDate, setDisplayedDate] = useState<number[]>([]);
+  const [studiedDate, setStudiedDate] = useState<number[]>([]);
 
-  const getStudyInfosByMonth = async () => {
-    if (user) {
-      const info = await firestore()
-        .collection('StudyInfo')
-        .doc(user.username)
-        .collection();
+  const getStudyInfosByMonth = useCallback(
+    async (date: number) => {
+      if (!user) {
+        return;
+      }
 
-      console.log(info);
+      let dates: number[] = [];
+      for (let i = Math.floor(date / 100) * 100 + 1; i <= date; i++) {
+        const studyInfo = await firestore()
+          .collection('StudyInfo')
+          .doc(user.username)
+          .collection(i.toString())
+          .get();
+        if (studyInfo.size > 0) {
+          dates.push(i);
+        }
+      }
+      setStudiedDate(dates);
+    },
+    [user],
+  );
+
+  const getCalendarInfo = useCallback((date: number) => {
+    const lastDate = DateUtil.getLastDate(date);
+    const lastDateOfPrevMonth = DateUtil.getLastDateOfPrevMonth(date);
+
+    let dates: number[] = [];
+    for (let i = firstDay.current - 1; i >= 0; i--) {
+      dates.push(lastDateOfPrevMonth - i);
     }
-  };
+    for (let i = Math.floor(lastDate / 100) * 100 + 1; i <= lastDate; i++) {
+      dates.push(i);
+    }
+    setDisplayedDate(dates);
+  }, []);
 
-  const lastDate = DateUtil.getLastDate(selectedDate);
-  const lastDateOfPrevMonth = DateUtil.getLastDateOfPrevMonth(selectedDate);
-  const firstDate = DateUtil.getFirstDay(selectedDate);
-
-  let displayedDate: number[] = [];
-  for (let i = firstDate - 1; i >= 0; i--) {
-    displayedDate.push(lastDateOfPrevMonth - i);
-  }
-  for (let i = Math.floor(lastDate / 100) * 100 + 1; i <= lastDate; i++) {
-    displayedDate.push(i);
-  }
-  const row = Math.ceil(displayedDate.length / 7) + 1;
+  useFocusEffect(
+    useCallback(() => {
+      firstDay.current = DateUtil.getFirstDay(selectedDate);
+      getCalendarInfo(selectedDate);
+      getStudyInfosByMonth(selectedDate);
+    }, [getCalendarInfo, getStudyInfosByMonth, selectedDate]),
+  );
 
   const changeToPrevMonth = () => {
     const changedDate = DateUtil.getLastDateOfPrevMonth(selectedDate);
@@ -110,17 +142,19 @@ const Calendar = () => {
         ))}
       </RowBox>
 
-      {[...new Array(row).keys()].map(i => {
+      {[...new Array(Math.ceil(displayedDate.length / 7) + 1).keys()].map(i => {
         return (
           <RowBox key={i}>
             {[...new Array(7).keys()].map(j => {
               const index = i * 7 + j;
               return (
                 <TextBox key={index + 7}>
+                  {studiedDate.includes(displayedDate[index]) && <Mark />}
                   <Text
                     style={{
                       color:
-                        index >= firstDate && index < displayedDate.length
+                        index >= firstDay.current &&
+                        index < displayedDate.length
                           ? color.gray
                           : color.lightGray,
                     }}>

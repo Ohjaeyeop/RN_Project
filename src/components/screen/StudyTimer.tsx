@@ -1,5 +1,10 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {color, Theme} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useUser} from '../../providers/UserProvider';
@@ -158,40 +163,51 @@ const StudyTimer = () => {
           onPress={selectedDate !== today ? () => changeDate(1) : undefined}
         />
       </View>
-      <View style={styles.displayedTime}>
-        <StyledText style={{fontSize: 41, fontWeight: 'bold', lineHeight: 61}}>
-          {getDisplayedTime(studyInfo.total)}
-        </StyledText>
-      </View>
-      <View style={styles.subjectBox}>
-        {subjects.map((subject, index) => (
-          <View key={subject} style={styles.subjectLine}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <TouchableOpacity
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 14,
-                  backgroundColor: subjectColors[index],
-                  marginRight: 12,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                onPress={() => handlePress(subject)}>
-                <Icon
-                  name={subject === selectedSubject ? 'pause' : 'play-arrow'}
-                  color={color.white}
-                  size={20}
-                />
-              </TouchableOpacity>
-              <StyledText style={{fontSize: 15}}>{subject}</StyledText>
-            </View>
-            <StyledText style={{fontSize: 15}}>
-              {getDisplayedTime(studyInfo[subject])}
+      {studyInfoStatus === 'succeeded' ? (
+        <>
+          <View style={styles.displayedTime}>
+            <StyledText
+              style={{fontSize: 41, fontWeight: 'bold', lineHeight: 61}}>
+              {getDisplayedTime(studyInfo.total)}
             </StyledText>
           </View>
-        ))}
-      </View>
+          <View style={styles.subjectBox}>
+            {subjects.map((subject, index) => (
+              <View key={subject} style={styles.subjectLine}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <TouchableOpacity
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: 14,
+                      backgroundColor: subjectColors[index],
+                      marginRight: 12,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    onPress={() => handlePress(subject)}>
+                    <Icon
+                      name={
+                        subject === selectedSubject ? 'pause' : 'play-arrow'
+                      }
+                      color={color.white}
+                      size={20}
+                    />
+                  </TouchableOpacity>
+                  <StyledText style={{fontSize: 15}}>{subject}</StyledText>
+                </View>
+                <StyledText style={{fontSize: 15}}>
+                  {getDisplayedTime(studyInfo[subject])}
+                </StyledText>
+              </View>
+            ))}
+          </View>
+        </>
+      ) : (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <ActivityIndicator />
+        </View>
+      )}
     </TimerContainer>
   );
 };

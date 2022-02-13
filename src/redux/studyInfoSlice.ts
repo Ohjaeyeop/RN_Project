@@ -9,7 +9,7 @@ export type StudyInfo = {
 
 type State = {
   studyInfo: StudyInfo;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  status: 'idle' | 'loading' | 'succeeded';
 };
 
 const initialState: State = {
@@ -33,7 +33,6 @@ export const getStudyInfo = createAsyncThunk(
         .doc(username)
         .collection(date)
         .get();
-
       return studyInfoRef.docs[0].data() as StudyInfo;
     } catch {
       return initialState.studyInfo;
@@ -91,9 +90,6 @@ export const studyInfoSlice = createSlice({
     builder.addCase(getStudyInfo.fulfilled, (state, action) => {
       state.status = 'succeeded';
       state.studyInfo = action.payload;
-    });
-    builder.addCase(getStudyInfo.rejected, state => {
-      state.status = 'failed';
     });
     builder.addCase(updateStudyInfo.fulfilled, (state, action) => {
       state.studyInfo = action.payload;
