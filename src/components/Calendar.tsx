@@ -2,7 +2,7 @@ import React, {useCallback, useRef, useState} from 'react';
 import styled from 'styled-components/native';
 import {color, Theme} from '../theme/color';
 import DateUtil from '../utils/DateUtil';
-import {View, Text} from 'react-native';
+import {Platform, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../providers/UserProvider';
@@ -14,7 +14,6 @@ const CalendarView = styled.View`
   border-radius: 12px;
   width: 100%;
   padding: 24px 15px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
   margin-bottom: 24px;
 `;
 
@@ -130,7 +129,16 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
   };
 
   return (
-    <CalendarView style={{shadowColor: 'rgba(0, 0, 0, 0.12)', elevation: 12}}>
+    <CalendarView
+      style={Platform.select({
+        ios: {
+          shadowColor: 'black',
+          shadowOffset: {width: 0, height: 4},
+          shadowRadius: 12,
+          shadowOpacity: 0.12,
+        },
+        android: {elevation: 3},
+      })}>
       <View
         style={{
           flexDirection: 'row',
