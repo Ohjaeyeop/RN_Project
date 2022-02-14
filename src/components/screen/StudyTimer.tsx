@@ -58,14 +58,29 @@ const StudyTimer = () => {
     setSelectedSubject(subject);
   };
 
-  const stopStudy = () => {
+  const stopStudy = useCallback(() => {
+    handler.clear();
     setSelectedSubject(undefined);
+  }, [handler]);
+
+  const startTimer = (subject: Subject) => {
+    setIntervalWithTimeout(
+      () => {
+        dispatch(increment(subject));
+      },
+      1000,
+      handler,
+    );
   };
 
-  useEffect(() => {
-    user &&
-      dispatch(getStudyInfo({username: user.username, date: today.toString()}));
-  }, [dispatch, today, user]);
+  useFocusEffect(
+    useCallback(() => {
+      user &&
+        dispatch(
+          getStudyInfo({username: user.username, date: today.toString()}),
+        );
+    }, [dispatch, today, user]),
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -81,11 +96,12 @@ const StudyTimer = () => {
           );
         handler.clear();
       };
-    }, [dispatch, handler, today, user]),
+    }, [dispatch, handler, stopStudy, today, user]),
   );
 
   const changeDate = (change: number) => {
     if (selectedDate === today) {
+      handler.clear();
       stopStudy();
       user &&
         dispatch(
@@ -111,16 +127,6 @@ const StudyTimer = () => {
       studyInfoRef.current = studyInfo;
     }
   }, [selectedDate, studyInfo, today]);
-
-  const startTimer = (subject: Subject) => {
-    setIntervalWithTimeout(
-      () => {
-        dispatch(increment(subject));
-      },
-      1000,
-      handler,
-    );
-  };
 
   const handlePress = (subject: Subject) => {
     if (selectedDate !== today) {

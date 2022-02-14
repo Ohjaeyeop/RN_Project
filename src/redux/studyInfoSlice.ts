@@ -89,7 +89,6 @@ export const studyInfoSlice = createSlice({
     builder.addCase(getStudyInfo.fulfilled, (state, action) => {
       state.status = 'succeeded';
       state.studyInfo = action.payload;
-      console.log(state.studyInfo);
     });
     builder.addCase(updateStudyInfo.fulfilled, (state, action) => {
       state.studyInfo = action.payload;
