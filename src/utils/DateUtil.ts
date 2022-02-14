@@ -32,8 +32,16 @@ class DateUtil {
     ).getDay();
   }
 
+  yearMonthDate(d: number) {
+    return `${this.getYear(d)}년 ${this.getMonth(d)}월 ${this.getDate(d)}일`;
+  }
+
   yearMonth(d: number) {
     return `${this.getYear(d)}년 ${this.getMonth(d)}월`;
+  }
+
+  monthDate(d: number) {
+    return `${this.getMonth(d)}월 ${this.getDate(d)}일`;
   }
 
   monthDateDay(d: number) {

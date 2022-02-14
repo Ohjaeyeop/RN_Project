@@ -3,7 +3,7 @@ import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
 import {color, Theme} from '../../theme/color';
 import Calendar from '../Calendar';
-import {View, Text, Dimensions} from 'react-native';
+import {View, Text, Dimensions, SafeAreaView} from 'react-native';
 import DateUtil from '../../utils/DateUtil';
 import GraphBySubject from '../GraphBySubject';
 import GraphByPeriod from '../GraphByPeriod';
@@ -22,27 +22,29 @@ const Diary = () => {
   };
 
   return (
-    <DiaryContainer>
-      <ScreenHeader title={'캘린더'} />
-      <View style={{paddingHorizontal: 20}}>
-        <Calendar
-          today={today}
-          selectedDate={selectedDate}
-          selectDate={selectDate}
+    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+      <DiaryContainer>
+        <ScreenHeader title={'캘린더'} />
+        <View style={{paddingHorizontal: 20}}>
+          <Calendar
+            today={today}
+            selectedDate={selectedDate}
+            selectDate={selectDate}
+          />
+        </View>
+        <GraphBySubject date={selectedDate} />
+        <View
+          style={{
+            width: Dimensions.get('window').width,
+            height: 12,
+            backgroundColor: color.lightLightGray,
+            marginBottom: 24,
+            marginTop: 20,
+          }}
         />
-      </View>
-      <GraphBySubject date={selectedDate} />
-      <View
-        style={{
-          width: Dimensions.get('window').width,
-          height: 12,
-          backgroundColor: color.lightLightGray,
-          marginBottom: 24,
-          marginTop: 20,
-        }}
-      />
-      <GraphByPeriod date={today} />
-    </DiaryContainer>
+        <GraphByPeriod date={today} />
+      </DiaryContainer>
+    </SafeAreaView>
   );
 };
 
