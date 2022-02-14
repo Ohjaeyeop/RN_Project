@@ -3,7 +3,7 @@ import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
 import {color, Theme} from '../../theme/color';
 import Calendar from '../Calendar';
-import {View, Text, Dimensions, SafeAreaView} from 'react-native';
+import {View, Dimensions, SafeAreaView} from 'react-native';
 import DateUtil from '../../utils/DateUtil';
 import GraphBySubject from '../GraphBySubject';
 import GraphByPeriod from '../GraphByPeriod';

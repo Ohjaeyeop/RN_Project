@@ -5,6 +5,7 @@ import {useUser} from '../providers/UserProvider';
 import DateUtil from '../utils/DateUtil';
 import {color} from '../theme/color';
 import Graph from '../Graph';
+import {useFocusEffect} from '@react-navigation/native';
 
 const GraphByPeriod = ({date}: {date: number}) => {
   const day = DateUtil.getDay(date) > 0 ? DateUtil.getDay(date) : 7;
@@ -35,7 +36,7 @@ const GraphByPeriod = ({date}: {date: number}) => {
   );
 
   const getRange = useCallback(
-    (offset: number) => {
+    (offset, period) => {
       if (period === '일간') {
         return {
           start: DateUtil.dateFromNow(offset),
@@ -57,22 +58,27 @@ const GraphByPeriod = ({date}: {date: number}) => {
         };
       }
     },
-    [date, day, period],
+    [date, day],
   );
 
-  const getData = useCallback(async () => {
-    let data: number[][] = [];
-    for (let i = -4; i <= 0; i++) {
-      const {start, end} = getRange(i);
-      const total = await getStudyTime(start, end);
-      data.push([start, end, total]);
-    }
-    setStudyTimes(data);
-  }, [getRange, getStudyTime]);
+  const getData = useCallback(
+    async period => {
+      let data: number[][] = [];
+      for (let i = -4; i <= 0; i++) {
+        const {start, end} = getRange(i, period);
+        const total = await getStudyTime(start, end);
+        data.push([start, end, total]);
+      }
+      setStudyTimes(data);
+    },
+    [getRange, getStudyTime],
+  );
 
-  useEffect(() => {
-    getData();
-  }, [getData, period]);
+  useFocusEffect(
+    useCallback(() => {
+      getData(period);
+    }, [getData, period]),
+  );
 
   return (
     <View style={{paddingHorizontal: 20, alignItems: 'center'}}>

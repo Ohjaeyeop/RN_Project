@@ -19,6 +19,7 @@ const gap = (graphWidth - 48 * 5) / 4;
 const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
   const [selectedIndex, setIndex] = useState(4);
   const maxValue = Math.max(
+    1,
     ...studyTimes.map(times => Math.floor(times[2] / 60)),
   );
 
