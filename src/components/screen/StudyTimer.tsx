@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -170,7 +171,7 @@ const StudyTimer = () => {
               {getDisplayedTime(studyInfo.total)}
             </StyledText>
           </View>
-          <View style={styles.subjectBox}>
+          <ScrollView style={styles.subjectBox}>
             {subjects.map(subject => (
               <View key={subject} style={styles.subjectLine}>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -200,7 +201,7 @@ const StudyTimer = () => {
                 </StyledText>
               </View>
             ))}
-          </View>
+          </ScrollView>
         </>
       ) : (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>

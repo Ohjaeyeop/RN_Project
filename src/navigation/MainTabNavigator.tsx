@@ -69,6 +69,7 @@ const MainTabNavigator = () => {
           name="Diary"
           component={Diary}
           options={{
+            tabBarLabelPosition: 'below-icon',
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'캘린더'} />
             ),

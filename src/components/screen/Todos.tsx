@@ -16,6 +16,7 @@ import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
 import TodoModal, {TodoModalRef} from '../shared/TodoModal';
 import {StyledText} from '../shared/StyledText';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 export type TodoObj = {
   id: string;
@@ -31,6 +32,7 @@ const TodoContainer = styled.SafeAreaView`
 
 const Todos = () => {
   const {user} = useUser();
+  const safeArea = useSafeAreaInsets();
   const todosRef = useMemo(
     () =>
       firestore().collection('Todo').doc(user?.username).collection('todos'),
@@ -46,18 +48,24 @@ const Todos = () => {
   const addTodoModalRef = useRef<TodoModalRef>(null);
   const editTodoModalRef = useRef<TodoModalRef>(null);
 
-  async function addTodo() {
-    await todosRef.add({title, body, complete: false});
+  const cleanTodo = () => {
     setTitle('');
     setBody('');
+  };
+
+  async function addTodo() {
+    await todosRef.add({title, body, complete: false});
+    cleanTodo();
   }
 
   async function editTodo() {
     await todosRef.doc(id).update({title, body});
+    cleanTodo();
   }
 
   async function deleteTodo() {
     await todosRef.doc(id).delete();
+    cleanTodo();
   }
 
   async function toggleComplete(id: string, complete: boolean) {
@@ -134,8 +142,11 @@ const Todos = () => {
         keyExtractor={todo => todo.id}
       />
       <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => addTodoModalRef.current?.openModal()}>
+        style={[styles.addButton, {right: 20 + safeArea.right}]}
+        onPress={() => {
+          cleanTodo();
+          addTodoModalRef.current?.openModal();
+        }}>
         <Icon name="add" color={color.white} size={25} />
       </TouchableOpacity>
       <TodoModal
@@ -192,7 +203,6 @@ const styles = StyleSheet.create({
   addButton: {
     position: 'absolute',
     bottom: 32,
-    right: 20,
     width: 48,
     height: 48,
     backgroundColor: color.primary,

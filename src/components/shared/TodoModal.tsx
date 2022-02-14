@@ -1,8 +1,9 @@
 import React, {useImperativeHandle, useRef} from 'react';
-import {Dimensions, View} from 'react-native';
+import {useWindowDimensions, View} from 'react-native';
 import styled from 'styled-components/native';
 import {color, Theme} from '../../theme/color';
 import Modal from 'react-native-modalbox';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const StyledText = styled.Text`
   color: ${({theme}: {theme: Theme}) => theme.text};
@@ -11,7 +12,6 @@ const StyledText = styled.Text`
 
 const StyledModal = styled(Modal)`
   background-color: ${({theme}: {theme: Theme}) => theme.background};
-  height: ${Dimensions.get('window').height * 0.6}px;
   border-radius: 10px;
   padding: 20px 24px;
 `;
@@ -54,6 +54,9 @@ const TodoModal = React.forwardRef<
   TodoModalRef,
   React.PropsWithChildren<Props>
 >((props, ref) => {
+  const width = useWindowDimensions().width;
+  const height = useWindowDimensions().height;
+  const safeArea = useSafeAreaInsets();
   const {title, body, setTitle, setBody} = props;
   const modalRef = useRef<Modal>(null);
 
@@ -73,8 +76,9 @@ const TodoModal = React.forwardRef<
       swipeToClose={false}
       coverScreen={true}
       backdropOpacity={0.5}
+      style={{height: height * 0.6}}
       ref={modalRef}>
-      <View>
+      <View style={{paddingHorizontal: safeArea.left}}>
         <StyledText
           style={{
             fontWeight: '700',
