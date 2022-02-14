@@ -13,6 +13,7 @@ const GraphBySubject = ({date}: {date: number}) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    console.log(date);
     user &&
       dispatch(getStudyInfo({username: user.username, date: date.toString()}));
   }, [date, dispatch, user]);

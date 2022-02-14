@@ -164,7 +164,11 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
                         borderColor: color.subPrimary,
                       }
                     }
-                    onPress={() => selectDate(displayedDates[index])}>
+                    onPress={
+                      index >= firstDay.current && index < displayedDates.length
+                        ? () => selectDate(displayedDates[index])
+                        : undefined
+                    }>
                     {studiedDates.includes(displayedDates[index]) && <Mark />}
                     <Text
                       style={{
