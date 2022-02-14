@@ -5,8 +5,10 @@ import {useAppDispatch, useAppSelector} from '../hooks/useReduxFunction';
 import {getStudyInfo, selectStudyInfo} from '../redux/studyInfoSlice';
 import {subjectColors, subjects} from '../data/study';
 import getDisplayedTime from '../utils/getDisplayedTime';
-import {color} from '../theme/color';
+import {color, Theme} from '../theme/color';
 import {useFocusEffect} from '@react-navigation/native';
+import {StyledText} from './shared/StyledText';
+import styled from 'styled-components/native';
 
 const GraphBySubject = ({date}: {date: number}) => {
   const {user} = useUser();
@@ -22,17 +24,24 @@ const GraphBySubject = ({date}: {date: number}) => {
     }, [date, dispatch, user]),
   );
 
+  const SubText = styled.Text`
+    color: ${({theme}: {theme: Theme}) => theme.subText};
+  `;
+
+  const Box = styled.View`
+    background-color: ${({theme}: {theme: Theme}) => theme.box};
+  `;
+
   return (
     <View style={{paddingHorizontal: 20}}>
-      <Text
+      <SubText
         style={{
-          color: color.navy,
           fontSize: 16,
           fontWeight: '700',
           marginBottom: 16,
         }}>
         과목별
-      </Text>
+      </SubText>
       {studyInfo.total === 0 ? (
         <View style={{justifyContent: 'center', alignItems: 'center'}}>
           <Text style={{color: color.gray, fontSize: 16}}>
@@ -49,33 +58,26 @@ const GraphBySubject = ({date}: {date: number}) => {
                   justifyContent: 'space-between',
                   marginBottom: 4,
                 }}>
-                <Text style={{color: 'black'}}>{subject}</Text>
-                <Text
-                  style={{
-                    color: 'black',
-                  }}>
-                  {getDisplayedTime(studyInfo[subject])}
-                </Text>
+                <StyledText>{subject}</StyledText>
+                <StyledText>{getDisplayedTime(studyInfo[subject])}</StyledText>
               </View>
-              <View
+              <Box
                 style={{
                   width: '100%',
                   height: 14,
                   borderRadius: 999,
-                  backgroundColor: color.lightGray,
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: 14,
                 }}>
-                <Text
+                <StyledText
                   style={{
                     fontSize: 10,
                     fontWeight: '700',
                     zIndex: 1,
-                    color: color.dark,
                   }}>
                   {Math.round((studyInfo[subject] / studyInfo.total) * 100)}%
-                </Text>
+                </StyledText>
                 <View
                   style={{
                     position: 'absolute',
@@ -88,7 +90,7 @@ const GraphBySubject = ({date}: {date: number}) => {
                     )}%`,
                   }}
                 />
-              </View>
+              </Box>
             </View>
           );
         })

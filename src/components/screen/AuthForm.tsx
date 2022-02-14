@@ -4,16 +4,13 @@ import {Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import {color, Theme} from '../../theme/color';
 import {useUser} from '../../providers/UserProvider';
 import styled from 'styled-components/native';
+import {StyledText} from '../shared/StyledText';
 
 const AuthFormContainer = styled.View`
   padding: 50px;
   flex: 1;
   justify-content: center;
   background-color: ${({theme}: {theme: Theme}) => theme.background};
-`;
-
-const StyledText = styled.Text`
-  color: ${({theme}: {theme: Theme}) => theme.text};
 `;
 
 const StyledTextInput = styled.TextInput`

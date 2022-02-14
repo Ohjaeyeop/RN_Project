@@ -1,11 +1,16 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Pressable, View, Text, StyleSheet} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../providers/UserProvider';
 import DateUtil from '../utils/DateUtil';
-import {color} from '../theme/color';
-import Graph from '../Graph';
+import {color, Theme} from '../theme/color';
+import Graph from './Graph';
 import {useFocusEffect} from '@react-navigation/native';
+import styled from 'styled-components/native';
+
+const SelectBox = styled.View`
+  background-color: ${({theme}: {theme: Theme}) => theme.box2};
+`;
 
 const GraphByPeriod = ({date}: {date: number}) => {
   const day = DateUtil.getDay(date) > 0 ? DateUtil.getDay(date) : 7;
@@ -82,9 +87,8 @@ const GraphByPeriod = ({date}: {date: number}) => {
 
   return (
     <View style={{paddingHorizontal: 20, alignItems: 'center'}}>
-      <View
+      <SelectBox
         style={{
-          backgroundColor: color.lightLightGray,
           borderRadius: 40,
           width: 'auto',
           flexDirection: 'row',
@@ -132,7 +136,7 @@ const GraphByPeriod = ({date}: {date: number}) => {
             월간
           </Text>
         </Pressable>
-      </View>
+      </SelectBox>
       <Graph studyTimes={studyTimes} />
     </View>
   );

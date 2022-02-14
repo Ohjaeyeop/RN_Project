@@ -1,20 +1,33 @@
 import React, {useState} from 'react';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
-import {color, Theme} from '../../theme/color';
+import {Theme} from '../../theme/color';
 import Calendar from '../Calendar';
-import {View, Dimensions, SafeAreaView} from 'react-native';
+import {View, useWindowDimensions} from 'react-native';
 import DateUtil from '../../utils/DateUtil';
 import GraphBySubject from '../GraphBySubject';
 import GraphByPeriod from '../GraphByPeriod';
 
-const DiaryContainer = styled.ScrollView`
+const DiarayContainer = styled.SafeAreaView`
   flex: 1;
   background-color: ${({theme}: {theme: Theme}) => theme.background};
 `;
 
+const DiaryScroll = styled.ScrollView`
+  flex: 1;
+  background-color: ${({theme}: {theme: Theme}) => theme.background};
+`;
+
+const DivisionLine = styled.View`
+  background-color: ${({theme}: {theme: Theme}) => theme.box2};
+  margin-bottom: 24px;
+  margin-top: 20px;
+  height: 12px;
+`;
+
 const Diary = () => {
   const today = DateUtil.now();
+  const width = useWindowDimensions().width;
   const [selectedDate, setSelectedDate] = useState(today);
 
   const selectDate = (date: number) => {
@@ -22,8 +35,8 @@ const Diary = () => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      <DiaryContainer>
+    <DiarayContainer>
+      <DiaryScroll>
         <ScreenHeader title={'캘린더'} />
         <View style={{paddingHorizontal: 20}}>
           <Calendar
@@ -33,18 +46,14 @@ const Diary = () => {
           />
         </View>
         <GraphBySubject date={selectedDate} />
-        <View
+        <DivisionLine
           style={{
-            width: Dimensions.get('window').width,
-            height: 12,
-            backgroundColor: color.lightLightGray,
-            marginBottom: 24,
-            marginTop: 20,
+            width: width,
           }}
         />
         <GraphByPeriod date={today} />
-      </DiaryContainer>
-    </SafeAreaView>
+      </DiaryScroll>
+    </DiarayContainer>
   );
 };
 

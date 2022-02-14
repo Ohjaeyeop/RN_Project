@@ -25,14 +25,11 @@ import DateUtil from '../../utils/DateUtil';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
 import {Subject, subjectColors, subjects} from '../../data/study';
+import {StyledText} from '../shared/StyledText';
 
 const TimerContainer = styled.SafeAreaView`
   flex: 1;
   background-color: ${({theme}: {theme: Theme}) => theme.background};
-`;
-
-const StyledText = styled.Text`
-  color: ${({theme}: {theme: Theme}) => theme.text};
 `;
 
 const StyledIcon = styled(Icon)`

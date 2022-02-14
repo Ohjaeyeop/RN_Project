@@ -1,23 +1,32 @@
 import React, {useState} from 'react';
 import {
   ActivityIndicator,
-  Dimensions,
   Image,
   Pressable,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
 } from 'react-native';
-import {color} from './theme/color';
-import DateUtil from './utils/DateUtil';
-import getDisplayedTime from './utils/getDisplayedTime';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {color, Theme} from '../theme/color';
+import DateUtil from '../utils/DateUtil';
+import getDisplayedTime from '../utils/getDisplayedTime';
+import styled from 'styled-components/native';
+import {StyledText} from './shared/StyledText';
+
+const SubText = styled.Text`
+  color: ${({theme}: {theme: Theme}) => theme.subText};
+`;
+
+const TimeBox = styled.View`
+  background-color: ${({theme}: {theme: Theme}) => theme.box2};
+`;
+
+const Line = styled.View`
+  background-color: ${({theme}: {theme: Theme}) => theme.box};
+`;
 
 const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
-  const [graphWidth, setGraphWidth] = useState(0);
   const graphHeight = 157;
-  const gap = Math.floor((graphWidth - 48 * 5) / 4);
   const [selectedIndex, setIndex] = useState(4);
   const maxValue = Math.max(
     1,
@@ -41,18 +50,15 @@ const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
   };
 
   return (
-    <View
-      style={{width: '100%'}}
-      onLayout={event => setGraphWidth(event.nativeEvent.layout.width)}>
-      <Text
+    <View style={{width: '100%'}}>
+      <SubText
         style={{
-          color: color.navy,
           fontSize: 16,
           fontWeight: '700',
           marginBottom: 4,
         }}>
         기간별 공부 시간
-      </Text>
+      </SubText>
       {studyTimes[selectedIndex] && (
         <Text style={{color: color.gray, marginBottom: 48}}>
           {DateUtil.yearMonthDate(studyTimes[selectedIndex][0])}
@@ -72,7 +78,7 @@ const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
               alignItems: 'flex-end',
             }}>
             {[...new Array(3).keys()].map(i => (
-              <View
+              <Line
                 key={i}
                 style={[styles.line, {top: (graphHeight * i) / 2}]}
               />
@@ -101,7 +107,7 @@ const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
                   ]}>
                   {Math.floor(time[2] / 60)}
                 </Text>
-                <Text
+                <StyledText
                   style={[
                     styles.xValue,
                     {
@@ -111,24 +117,22 @@ const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
                     },
                   ]}>
                   {xAxisValue(time, index)}
-                </Text>
+                </StyledText>
               </Pressable>
             ))}
           </View>
-          <View style={styles.timeBox}>
+          <TimeBox style={styles.timeBox}>
             <Image
-              source={require('../assets/book.png')}
+              source={require('../../assets/book.png')}
               style={{width: 25, height: 28, marginRight: 10}}
             />
             <View>
-              <Text style={{color: color.navy, fontSize: 12, height: 18}}>
-                공부 시간
-              </Text>
-              <Text style={{color: color.dark, fontWeight: '700', height: 21}}>
+              <SubText style={{fontSize: 12, height: 18}}>공부 시간</SubText>
+              <StyledText style={{fontWeight: '700', height: 21}}>
                 {getDisplayedTime(studyTimes[selectedIndex][2])}
-              </Text>
+              </StyledText>
             </View>
-          </View>
+          </TimeBox>
         </>
       ) : (
         <ActivityIndicator />
@@ -143,7 +147,6 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     height: 1,
-    backgroundColor: color.lightGray,
   },
   bar: {
     width: 48,
@@ -162,13 +165,11 @@ const styles = StyleSheet.create({
   },
   xValue: {
     height: 18,
-    color: color.subDark,
     fontSize: 12,
     textAlign: 'center',
   },
   timeBox: {
     width: '100%',
-    backgroundColor: color.lightLightGray,
     padding: 21,
     borderRadius: 10,
     marginBottom: 48,

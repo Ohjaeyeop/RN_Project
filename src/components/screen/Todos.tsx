@@ -15,6 +15,7 @@ import Todo from '../Todo';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
 import TodoModal, {TodoModalRef} from '../shared/TodoModal';
+import {StyledText} from '../shared/StyledText';
 
 export type TodoObj = {
   id: string;
@@ -26,11 +27,6 @@ export type TodoObj = {
 const TodoContainer = styled.SafeAreaView`
   flex: 1;
   background-color: ${({theme}: {theme: Theme}) => theme.background};
-`;
-
-const StyledText = styled.Text`
-  color: ${({theme}: {theme: Theme}) => theme.text};
-  font-size: 16px;
 `;
 
 const Todos = () => {

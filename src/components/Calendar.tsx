@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../providers/UserProvider';
 import {useFocusEffect} from '@react-navigation/native';
+import {StyledText} from './shared/StyledText';
 
 const CalendarView = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.background};
@@ -37,6 +38,24 @@ const Mark = styled.View`
   background-color: ${color.primary};
   position: absolute;
   top: 1px;
+`;
+
+const Days = styled.Text`
+  color: ${({theme}: {theme: Theme}) => theme.subText};
+`;
+
+const Date = styled.Text`
+  color: ${({
+    index,
+    firstDay,
+    length,
+    theme,
+  }: {
+    index: number;
+    firstDay: number;
+    length: number;
+    theme: Theme;
+  }) => (index >= firstDay && index < length ? color.gray : theme.box)};
 `;
 
 const days = ['일', '월', '화', '수', '목', '금', '토'];
@@ -111,7 +130,7 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
   };
 
   return (
-    <CalendarView>
+    <CalendarView style={{shadowColor: 'rgba(0, 0, 0, 0.12)', elevation: 12}}>
       <View
         style={{
           flexDirection: 'row',
@@ -125,15 +144,14 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
           color={color.primary}
           onPress={changeToPrevMonth}
         />
-        <Text
+        <StyledText
           style={{
             fontSize: 18,
             fontWeight: '700',
             marginHorizontal: 12,
-            color: color.dark,
           }}>
           {DateUtil.yearMonth(lastDate)}
-        </Text>
+        </StyledText>
         <Icon
           name={'arrow-right'}
           size={25}
@@ -144,12 +162,7 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
       <RowBox>
         {days.map(day => (
           <TextBox key={day}>
-            <Text
-              style={{
-                color: color.navy,
-              }}>
-              {day}
-            </Text>
+            <Days>{day}</Days>
           </TextBox>
         ))}
       </RowBox>
@@ -176,18 +189,14 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
                         : undefined
                     }>
                     {studiedDates.includes(displayedDates[index]) && <Mark />}
-                    <Text
-                      style={{
-                        color:
-                          index >= firstDay.current &&
-                          index < displayedDates.length
-                            ? color.gray
-                            : color.lightGray,
-                      }}>
+                    <Date
+                      index={index}
+                      firstDay={firstDay.current}
+                      length={displayedDates.length}>
                       {index < displayedDates.length
                         ? displayedDates[index] % 100
                         : index - displayedDates.length + 1}
-                    </Text>
+                    </Date>
                   </TextBox>
                 );
               })}

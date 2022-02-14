@@ -3,6 +3,7 @@ import {Text, TouchableOpacity, View} from 'react-native';
 import {TodoObj} from './screen/Todos';
 import {color} from '../theme/color';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {StyledText} from './shared/StyledText';
 
 type Props = {
   toggleComplete: (id: string, complete: boolean) => Promise<void>;
@@ -36,7 +37,7 @@ const Todo = ({
           color={color.gray}
           onPress={() => toggleComplete(id, complete)}
         />
-        <Text
+        <StyledText
           style={{
             fontSize: 16,
             fontWeight: '700',
@@ -44,7 +45,7 @@ const Todo = ({
             textDecorationLine: type === 'DONE' ? 'line-through' : undefined,
           }}>
           {title}
-        </Text>
+        </StyledText>
       </View>
       <View
         style={{
