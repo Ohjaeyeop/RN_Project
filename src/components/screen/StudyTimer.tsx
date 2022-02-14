@@ -48,10 +48,25 @@ const StudyTimer = () => {
   const [offset, setOffset] = useState(0);
   const handler = useRef(new TimeoutHandler()).current;
   const dispatch = useAppDispatch();
+  const callRef = useRef<() => void>();
+  callRef.current = () => {
+    user &&
+      dispatch(
+        updateStudyInfo({
+          username: user.username,
+          date: today.toString(),
+          studyInfo: studyInfo,
+        }),
+      );
+  };
 
   const studyInfo = useAppSelector(selectStudyInfo);
   const studyInfoRef = useRef<StudyInfo>(studyInfo);
   const studyInfoStatus = useAppSelector(state => state.studyInfo.status);
+
+  const updateInfo = () => {
+    callRef.current?.();
+  };
 
   const startStudy = (subject: Subject) => {
     startTimer(subject);
@@ -86,31 +101,17 @@ const StudyTimer = () => {
     useCallback(() => {
       return () => {
         stopStudy();
-        user &&
-          dispatch(
-            updateStudyInfo({
-              username: user.username,
-              date: today.toString(),
-              studyInfo: studyInfoRef.current,
-            }),
-          );
+        updateInfo();
         handler.clear();
       };
-    }, [dispatch, handler, stopStudy, today, user]),
+    }, [handler, stopStudy]),
   );
 
   const changeDate = (change: number) => {
     if (selectedDate === today) {
       handler.clear();
       stopStudy();
-      user &&
-        dispatch(
-          updateStudyInfo({
-            username: user.username,
-            date: today.toString(),
-            studyInfo: studyInfoRef.current,
-          }),
-        );
+      updateInfo();
     }
     const changedDate = DateUtil.dateFromNow(offset + change);
     user &&

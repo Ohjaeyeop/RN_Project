@@ -6,17 +6,18 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import {color} from './theme/color';
 import DateUtil from './utils/DateUtil';
 import getDisplayedTime from './utils/getDisplayedTime';
-
-const graphWidth = Dimensions.get('window').width - 40 - 48;
-const graphHeight = 157;
-const gap = (graphWidth - 48 * 5) / 4;
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
+  const [graphWidth, setGraphWidth] = useState(0);
+  const graphHeight = 157;
+  const gap = Math.floor((graphWidth - 48 * 5) / 4);
   const [selectedIndex, setIndex] = useState(4);
   const maxValue = Math.max(
     1,
@@ -40,7 +41,9 @@ const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
   };
 
   return (
-    <View style={{width: '100%'}}>
+    <View
+      style={{width: '100%'}}
+      onLayout={event => setGraphWidth(event.nativeEvent.layout.width)}>
       <Text
         style={{
           color: color.navy,
@@ -59,7 +62,15 @@ const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
       )}
       {studyTimes[selectedIndex] ? (
         <>
-          <View style={styles.graph}>
+          <View
+            style={{
+              paddingHorizontal: 24,
+              height: graphHeight,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginBottom: 50,
+              alignItems: 'flex-end',
+            }}>
             {[...new Array(3).keys()].map(i => (
               <View
                 key={i}
@@ -72,16 +83,21 @@ const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
                   styles.bar,
                   {
                     height: (graphHeight * Math.floor(time[2] / 60)) / maxValue,
-                    left: index * (48 + gap) + 24,
                   },
-                  index === selectedIndex && {backgroundColor: color.primary},
+                  {
+                    backgroundColor:
+                      index === selectedIndex ? color.primary : color.variant,
+                  },
                 ]}
                 onPress={() => setIndex(index)}
                 key={time[0]}>
                 <Text
                   style={[
                     styles.value,
-                    index === selectedIndex && {color: color.primary},
+                    {
+                      color:
+                        index === selectedIndex ? color.primary : color.gray,
+                    },
                   ]}>
                   {Math.floor(time[2] / 60)}
                 </Text>
@@ -122,22 +138,15 @@ const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
 };
 
 const styles = StyleSheet.create({
-  graph: {
-    paddingHorizontal: 24,
-    height: graphHeight,
-    alignItems: 'center',
-    marginBottom: 50,
-  },
   line: {
     position: 'absolute',
-    width: '100%',
+    left: 20,
+    right: 20,
     height: 1,
     backgroundColor: color.lightGray,
   },
   bar: {
     width: 48,
-    backgroundColor: color.variant,
-    position: 'absolute',
     bottom: 0,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
@@ -149,7 +158,6 @@ const styles = StyleSheet.create({
     height: 18,
     top: -18,
     fontSize: 12,
-    color: color.gray,
     textAlign: 'center',
   },
   xValue: {

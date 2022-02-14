@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useCallback} from 'react';
 import {Text, View} from 'react-native';
 import {useUser} from '../providers/UserProvider';
 import {useAppDispatch, useAppSelector} from '../hooks/useReduxFunction';
@@ -6,17 +6,21 @@ import {getStudyInfo, selectStudyInfo} from '../redux/studyInfoSlice';
 import {subjectColors, subjects} from '../data/study';
 import getDisplayedTime from '../utils/getDisplayedTime';
 import {color} from '../theme/color';
+import {useFocusEffect} from '@react-navigation/native';
 
 const GraphBySubject = ({date}: {date: number}) => {
   const {user} = useUser();
   const studyInfo = useAppSelector(selectStudyInfo);
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    console.log(date);
-    user &&
-      dispatch(getStudyInfo({username: user.username, date: date.toString()}));
-  }, [date, dispatch, user]);
+  useFocusEffect(
+    useCallback(() => {
+      user &&
+        dispatch(
+          getStudyInfo({username: user.username, date: date.toString()}),
+        );
+    }, [date, dispatch, user]),
+  );
 
   return (
     <View style={{paddingHorizontal: 20}}>
