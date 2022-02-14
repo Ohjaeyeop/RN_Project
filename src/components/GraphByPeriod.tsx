@@ -76,6 +76,7 @@ const GraphByPeriod = ({date}: {date: number}) => {
 
   useFocusEffect(
     useCallback(() => {
+      console.log(1);
       getData(period);
     }, [getData, period]),
   );

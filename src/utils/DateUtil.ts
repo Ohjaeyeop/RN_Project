@@ -94,6 +94,21 @@ class DateUtil {
   getFirstDay(d: number) {
     return new Date(this.getYear(d), this.getMonth(d) - 1, 1).getDay();
   }
+
+  betweenDay(start: number, end: number) {
+    const startDate = new Date(
+      this.getYear(start),
+      this.getMonth(start),
+      this.getDate(start),
+    );
+    const endDate = new Date(
+      this.getYear(end),
+      this.getMonth(end),
+      this.getDate(end),
+    );
+
+    return (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+  }
 }
 
 export default new DateUtil();

@@ -23,6 +23,22 @@ const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
     ...studyTimes.map(times => Math.floor(times[2] / 60)),
   );
 
+  const xAxisValue = (time: number[], index: number) => {
+    if (studyTimes[0][0] === studyTimes[0][1]) {
+      return `${DateUtil.getMonth(time[1])}.${DateUtil.getDate(time[1])}`;
+    } else if (DateUtil.betweenDay(studyTimes[0][0], studyTimes[0][1]) === 6) {
+      if (index === 4) {
+        return '이번 주';
+      }
+      return `~${DateUtil.getMonth(time[1])}.${DateUtil.getDate(time[1])}`;
+    } else {
+      if (index === 4) {
+        return '이번 달';
+      }
+      return `${DateUtil.getMonth(time[1])}월`;
+    }
+  };
+
   return (
     <View style={{width: '100%'}}>
       <Text
@@ -60,7 +76,8 @@ const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
                   },
                   index === selectedIndex && {backgroundColor: color.primary},
                 ]}
-                onPress={() => setIndex(index)}>
+                onPress={() => setIndex(index)}
+                key={time[0]}>
                 <Text
                   style={[
                     styles.value,
@@ -77,7 +94,7 @@ const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
                         10,
                     },
                   ]}>
-                  {`${DateUtil.getMonth(time[1])}.${DateUtil.getDate(time[1])}`}
+                  {xAxisValue(time, index)}
                 </Text>
               </Pressable>
             ))}
