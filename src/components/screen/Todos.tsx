@@ -4,14 +4,12 @@ import {
   TouchableOpacity,
   View,
   Pressable,
-  Dimensions,
   FlatList,
 } from 'react-native';
 import {color, Theme} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useUser} from '../../providers/UserProvider';
 import firestore from '@react-native-firebase/firestore';
-import Modal from 'react-native-modalbox';
 import Button from '../shared/Button';
 import Todo from '../Todo';
 import ScreenHeader from '../shared/ScreenHeader';
@@ -25,7 +23,7 @@ export type TodoObj = {
   complete: boolean;
 };
 
-const TodoContainer = styled.View`
+const TodoContainer = styled.SafeAreaView`
   flex: 1;
   background-color: ${({theme}: {theme: Theme}) => theme.background};
 `;

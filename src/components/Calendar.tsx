@@ -125,7 +125,13 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
           color={color.primary}
           onPress={changeToPrevMonth}
         />
-        <Text style={{fontSize: 18, fontWeight: '700', marginHorizontal: 12}}>
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: '700',
+            marginHorizontal: 12,
+            color: color.dark,
+          }}>
           {DateUtil.yearMonth(lastDate)}
         </Text>
         <Icon

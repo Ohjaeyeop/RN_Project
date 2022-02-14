@@ -67,7 +67,13 @@ const GraphBySubject = ({date}: {date: number}) => {
                   justifyContent: 'center',
                   marginBottom: 14,
                 }}>
-                <Text style={{fontSize: 10, fontWeight: '700', zIndex: 1}}>
+                <Text
+                  style={{
+                    fontSize: 10,
+                    fontWeight: '700',
+                    zIndex: 1,
+                    color: color.dark,
+                  }}>
                   {Math.round((studyInfo[subject] / studyInfo.total) * 100)}%
                 </Text>
                 <View
