@@ -7,7 +7,7 @@ import {subjectColors, subjects} from '../data/study';
 import getDisplayedTime from '../utils/getDisplayedTime';
 import {color} from '../theme/color';
 
-const ChartBySubject = ({date}: {date: number}) => {
+const GraphBySubject = ({date}: {date: number}) => {
   const {user} = useUser();
   const studyInfo = useAppSelector(selectStudyInfo);
   const dispatch = useAppDispatch();
@@ -18,7 +18,7 @@ const ChartBySubject = ({date}: {date: number}) => {
   }, [date, dispatch, user]);
 
   return (
-    <View style={{marginBottom: 24}}>
+    <View style={{paddingHorizontal: 20}}>
       <Text
         style={{
           color: color.navy,
@@ -86,4 +86,4 @@ const ChartBySubject = ({date}: {date: number}) => {
   );
 };
 
-export default ChartBySubject;
+export default GraphBySubject;

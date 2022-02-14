@@ -24,6 +24,14 @@ class DateUtil {
     return d % 100;
   }
 
+  getDay(d: number) {
+    return new Date(
+      this.getYear(d),
+      this.getMonth(d),
+      this.getDate(d),
+    ).getDay();
+  }
+
   yearMonth(d: number) {
     return `${this.getYear(d)}년 ${this.getMonth(d)}월`;
   }
@@ -46,6 +54,12 @@ class DateUtil {
   dateFromNow(offset: number) {
     const now = new Date();
     const newDate = new Date(now.setDate(now.getDate() + offset));
+    return this.dateToNumber(newDate);
+  }
+
+  dateFromNowByMonth(offset: number) {
+    const now = new Date();
+    const newDate = new Date(now.setMonth(now.getMonth() + offset));
     return this.dateToNumber(newDate);
   }
 

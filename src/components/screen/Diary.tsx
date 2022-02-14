@@ -3,13 +3,13 @@ import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
 import {color, Theme} from '../../theme/color';
 import Calendar from '../Calendar';
-import {View, Text} from 'react-native';
+import {View, Text, Dimensions} from 'react-native';
 import DateUtil from '../../utils/DateUtil';
-import ChartBySubject from '../ChartBySubject';
+import GraphBySubject from '../GraphBySubject';
+import GraphByPeriod from '../GraphByPeriod';
 
 const DiaryContainer = styled.ScrollView`
   flex: 1;
-  padding: 20px;
   background-color: ${({theme}: {theme: Theme}) => theme.background};
 `;
 
@@ -24,12 +24,24 @@ const Diary = () => {
   return (
     <DiaryContainer>
       <ScreenHeader title={'캘린더'} />
-      <Calendar
-        today={today}
-        selectedDate={selectedDate}
-        selectDate={selectDate}
+      <View style={{paddingHorizontal: 20}}>
+        <Calendar
+          today={today}
+          selectedDate={selectedDate}
+          selectDate={selectDate}
+        />
+      </View>
+      <GraphBySubject date={selectedDate} />
+      <View
+        style={{
+          width: Dimensions.get('window').width,
+          height: 12,
+          backgroundColor: color.lightLightGray,
+          marginBottom: 24,
+          marginTop: 20,
+        }}
       />
-      <ChartBySubject date={selectedDate} />
+      <GraphByPeriod date={today} />
     </DiaryContainer>
   );
 };
