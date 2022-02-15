@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react';
-import {Text, View} from 'react-native';
+import {ActivityIndicator, Text, View} from 'react-native';
 import {useUser} from '../providers/UserProvider';
 import {useAppDispatch, useAppSelector} from '../hooks/useReduxFunction';
 import {getStudyInfo, selectStudyInfo} from '../redux/studyInfoSlice';
@@ -39,58 +39,64 @@ const GraphBySubject = ({date}: {date: number}) => {
         }}>
         과목별
       </SubText>
-      {studyInfo.total === 0 ? (
-        <View style={{justifyContent: 'center', alignItems: 'center'}}>
-          <Text style={{color: color.gray, fontSize: 16}}>
-            학습 기록이 없어요
-          </Text>
-        </View>
-      ) : (
-        subjects.map(subject => {
-          return (
-            <View key={subject}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginBottom: 4,
-                }}>
-                <StyledText>{subject}</StyledText>
-                <StyledText>{getDisplayedTime(studyInfo[subject])}</StyledText>
-              </View>
-              <Box
-                style={{
-                  width: '100%',
-                  height: 14,
-                  borderRadius: 999,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: 14,
-                }}>
-                <StyledText
-                  style={{
-                    fontSize: 10,
-                    fontWeight: '700',
-                    zIndex: 1,
-                  }}>
-                  {Math.round((studyInfo[subject] / studyInfo.total) * 100)}%
-                </StyledText>
+      {studyInfo.date === date ? (
+        studyInfo.total === 0 ? (
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <Text style={{color: color.gray, fontSize: 16}}>
+              학습 기록이 없어요
+            </Text>
+          </View>
+        ) : (
+          subjects.map(subject => {
+            return (
+              <View key={subject}>
                 <View
                   style={{
-                    position: 'absolute',
-                    left: 0,
-                    backgroundColor: subjectColors[subject],
-                    borderRadius: 999,
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginBottom: 4,
+                  }}>
+                  <StyledText>{subject}</StyledText>
+                  <StyledText>
+                    {getDisplayedTime(studyInfo[subject])}
+                  </StyledText>
+                </View>
+                <Box
+                  style={{
+                    width: '100%',
                     height: 14,
-                    width: `${Math.round(
-                      (studyInfo[subject] / studyInfo.total) * 100,
-                    )}%`,
-                  }}
-                />
-              </Box>
-            </View>
-          );
-        })
+                    borderRadius: 999,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 14,
+                  }}>
+                  <StyledText
+                    style={{
+                      fontSize: 10,
+                      fontWeight: '700',
+                      zIndex: 1,
+                    }}>
+                    {Math.round((studyInfo[subject] / studyInfo.total) * 100)}%
+                  </StyledText>
+                  <View
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      backgroundColor: subjectColors[subject],
+                      borderRadius: 999,
+                      height: 14,
+                      width: `${Math.round(
+                        (studyInfo[subject] / studyInfo.total) * 100,
+                      )}%`,
+                    }}
+                  />
+                </Box>
+              </View>
+            );
+          })
+        )
+      ) : (
+        <ActivityIndicator color={color.primary} />
       )}
     </View>
   );
