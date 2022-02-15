@@ -35,6 +35,19 @@ export const getUserRef = async (username: string) => {
     .get();
 };
 
+export const getStudyInfoByPeriod = async (
+  username: string,
+  start: number,
+  end: number,
+) => {
+  const userRef = await getUserRef(username);
+  return await userRef.docs[0].ref
+    .collection('StudyInfo')
+    .where('date', '>=', start)
+    .where('date', '<=', end)
+    .get();
+};
+
 const getStudyInfoRef = async (
   userRef: FirebaseFirestoreTypes.QuerySnapshot<FirebaseFirestoreTypes.DocumentData>,
   date: number,

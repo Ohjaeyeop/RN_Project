@@ -8,6 +8,7 @@ import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../providers/UserProvider';
 import {useFocusEffect} from '@react-navigation/native';
 import {StyledText} from './shared/StyledText';
+import {getStudyInfoByPeriod, getUserRef} from '../redux/studyInfoSlice';
 
 const CalendarView = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.background};
@@ -79,16 +80,16 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
       }
 
       let dates: number[] = [];
-      for (let i = Math.floor(date / 100) * 100 + 1; i <= date; i++) {
-        const studyInfo = await firestore()
-          .collection('StudyInfo')
-          .doc(user.username)
-          .collection(i.toString())
-          .get();
-        if (studyInfo.size > 0) {
-          dates.push(i);
+      await getStudyInfoByPeriod(
+        user.username,
+        Math.floor(date / 100) * 100 + 1,
+        date,
+      ).then(querySnapshot => {
+        if (querySnapshot.size > 0) {
+          dates.push(querySnapshot.docs[0].data().date);
         }
-      }
+      });
+
       setStudiedDates(dates);
     },
     [user],
