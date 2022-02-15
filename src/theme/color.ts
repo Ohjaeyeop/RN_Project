@@ -18,16 +18,22 @@ export type Theme = {
   background: string;
   text: string;
   box: string;
+  subText: string;
+  box2: string;
 };
 
 export const light = {
   background: color.white,
   text: color.dark,
   box: color.lightGray,
+  subText: color.navy,
+  box2: color.lightLightGray,
 };
 
 export const dark = {
   background: color.dark,
   text: color.white,
   box: color.subDark,
+  subText: color.white,
+  box2: color.subDark,
 };

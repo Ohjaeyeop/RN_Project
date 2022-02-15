@@ -64,6 +64,7 @@ const MainTabNavigator = () => {
         screenOptions={{
           headerShown: false,
           tabBarBackground: () => <TabBarBackground />,
+          tabBarLabelPosition: 'below-icon',
         }}>
         <Tab.Screen
           name="Diary"

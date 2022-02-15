@@ -1,5 +1,12 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useCallback, useRef, useState} from 'react';
+import {
+  ActivityIndicator,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {color, Theme} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useUser} from '../../providers/UserProvider';
@@ -11,7 +18,6 @@ import {
   getStudyInfo,
   increment,
   selectStudyInfo,
-  setIdle,
   updateStudyInfo,
 } from '../../redux/studyInfoSlice';
 import getDisplayedTime from '../../utils/getDisplayedTime';
@@ -19,19 +25,12 @@ import {useFocusEffect} from '@react-navigation/native';
 import DateUtil from '../../utils/DateUtil';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
+import {Subject, subjectColors, subjects} from '../../data/study';
+import {StyledText} from '../shared/StyledText';
 
-export type Subject = '국어' | '수학' | '영어' | '한국사' | '기타';
-
-const subjects: Subject[] = ['국어', '수학', '영어', '한국사', '기타'];
-const subjectColors = ['#D3165E', '#EF6825', '#FFC108', '#009148', '#00A4EC'];
-
-const TimerContainer = styled.View`
+const TimerContainer = styled.SafeAreaView`
   flex: 1;
   background-color: ${({theme}: {theme: Theme}) => theme.background};
-`;
-
-const StyledText = styled.Text`
-  color: ${({theme}: {theme: Theme}) => theme.text};
 `;
 
 const StyledIcon = styled(Icon)`
@@ -41,75 +40,88 @@ const StyledIcon = styled(Icon)`
 const StudyTimer = () => {
   const today = DateUtil.now();
   const {user} = useUser();
-  const [isStudying, setIsStudying] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState<Subject>();
   const [selectedDate, setSelectedDate] = useState(today);
   const [offset, setOffset] = useState(0);
   const handler = useRef(new TimeoutHandler()).current;
+  const dispatch = useAppDispatch();
+  const callRef = useRef<() => void>();
+  callRef.current = () => {
+    user &&
+      dispatch(
+        updateStudyInfo({
+          username: user.username,
+          date: today,
+          studyInfo: studyInfo,
+        }),
+      );
+  };
 
   const studyInfo = useAppSelector(selectStudyInfo);
-  const studyInfoStatus = useAppSelector(state => state.studyInfo.status);
-  const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    if (user) {
-      dispatch(
-        getStudyInfo({username: user.username, date: selectedDate.toString()}),
-      );
-    }
-  }, [dispatch, selectedDate, today, user]);
+  const updateInfo = () => {
+    callRef.current?.();
+  };
+
+  const startStudy = (subject: Subject) => {
+    startTimer(subject);
+    setSelectedSubject(subject);
+  };
+
+  const stopStudy = useCallback(() => {
+    handler.clear();
+    setSelectedSubject(undefined);
+  }, [handler]);
+
+  const startTimer = (subject: Subject) => {
+    setIntervalWithTimeout(
+      sec => {
+        dispatch(increment({subject, sec}));
+      },
+      999,
+      handler,
+    );
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      user && dispatch(getStudyInfo({username: user.username, date: today}));
+    }, [dispatch, today, user]),
+  );
 
   useFocusEffect(
     useCallback(() => {
       return () => {
-        setSelectedSubject(undefined);
-        setIsStudying(false);
+        stopStudy();
+        updateInfo();
         handler.clear();
-        dispatch(setIdle());
       };
-    }, [dispatch, handler]),
+    }, [handler, stopStudy]),
   );
 
-  useEffect(() => {
-    user &&
-      studyInfoStatus === 'succeeded' &&
-      selectedDate === today &&
-      dispatch(
-        updateStudyInfo({
-          username: user.username,
-          date: today.toString(),
-          studyInfo,
-        }),
-      );
-  }, [dispatch, studyInfo, studyInfoStatus, today, user]);
-
   const changeDate = (change: number) => {
+    if (selectedDate === today) {
+      handler.clear();
+      stopStudy();
+      updateInfo();
+    }
+    const changedDate = DateUtil.dateFromNow(offset + change);
     setOffset(offset + change);
-    setSelectedDate(DateUtil.dateFromNow(offset + change));
-  };
-
-  const startTimer = (subject: Subject) => {
-    setIntervalWithTimeout(
-      () => {
-        dispatch(increment(subject));
-      },
-      1000,
-      handler,
-    );
+    setSelectedDate(changedDate);
+    user &&
+      dispatch(getStudyInfo({username: user.username, date: changedDate}));
   };
 
   const handlePress = (subject: Subject) => {
     if (selectedDate !== today) {
       return;
     }
+
     handler.clear();
     if (subject === selectedSubject) {
-      setSelectedSubject(undefined);
-      setIsStudying(!isStudying);
+      stopStudy();
     } else {
-      setSelectedSubject(subject);
-      setIsStudying(true);
-      startTimer(subject);
+      startStudy(subject);
     }
   };
 
@@ -136,40 +148,51 @@ const StudyTimer = () => {
           onPress={selectedDate !== today ? () => changeDate(1) : undefined}
         />
       </View>
-      <View style={styles.displayedTime}>
-        <StyledText style={{fontSize: 41, fontWeight: 'bold', lineHeight: 61}}>
-          {getDisplayedTime(studyInfo.total)}
-        </StyledText>
-      </View>
-      <View style={styles.subjectBox}>
-        {subjects.map((subject, index) => (
-          <View key={subject} style={styles.subjectLine}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <TouchableOpacity
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 14,
-                  backgroundColor: subjectColors[index],
-                  marginRight: 12,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                onPress={() => handlePress(subject)}>
-                <Icon
-                  name={subject === selectedSubject ? 'pause' : 'play-arrow'}
-                  color={color.white}
-                  size={20}
-                />
-              </TouchableOpacity>
-              <StyledText style={{fontSize: 15}}>{subject}</StyledText>
-            </View>
-            <StyledText style={{fontSize: 15}}>
-              {getDisplayedTime(studyInfo[subject])}
+      {studyInfo.date === selectedDate ? (
+        <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}>
+          <View style={[styles.displayedTime]}>
+            <StyledText
+              style={{fontSize: 41, fontWeight: 'bold', lineHeight: 61}}>
+              {getDisplayedTime(studyInfo.total)}
             </StyledText>
           </View>
-        ))}
-      </View>
+          <View style={{}}>
+            {subjects.map(subject => (
+              <View key={subject} style={styles.subjectLine}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <TouchableOpacity
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: 14,
+                      backgroundColor: subjectColors[subject],
+                      marginRight: 12,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    onPress={() => handlePress(subject)}>
+                    <Icon
+                      name={
+                        subject === selectedSubject ? 'pause' : 'play-arrow'
+                      }
+                      color={color.white}
+                      size={20}
+                    />
+                  </TouchableOpacity>
+                  <StyledText style={{fontSize: 15}}>{subject}</StyledText>
+                </View>
+                <StyledText style={{fontSize: 15}}>
+                  {getDisplayedTime(studyInfo[subject])}
+                </StyledText>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+      ) : (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <ActivityIndicator color={color.primary} />
+        </View>
+      )}
     </TimerContainer>
   );
 };
@@ -181,11 +204,6 @@ const styles = StyleSheet.create({
   displayedTime: {
     alignItems: 'center',
     marginVertical: 12,
-  },
-  subjectBox: {
-    borderTopWidth: 0.5,
-    borderColor: color.gray,
-    flex: 1,
   },
   subjectLine: {
     flexDirection: 'row',

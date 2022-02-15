@@ -1,13 +1,10 @@
 import styled from 'styled-components/native';
 import {Theme} from '../../theme/color';
 import React from 'react';
-import {getStatusBarHeight} from 'react-native-status-bar-height';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
-const statusBarHeight = getStatusBarHeight(true);
-
-const Header = styled.SafeAreaView`
+const Header = styled.View`
   width: 100%;
-  height: ${statusBarHeight + 40}px;
   align-items: center;
   margin-bottom: 24px;
 `;
@@ -20,8 +17,10 @@ const Title = styled.Text`
 `;
 
 const ScreenHeader = ({title}: {title: string}) => {
+  const safeArea = useSafeAreaInsets();
+
   return (
-    <Header>
+    <Header style={{height: 80 - safeArea.top}}>
       <Title>{title}</Title>
     </Header>
   );

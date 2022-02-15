@@ -14,22 +14,29 @@ export class TimeoutHandler {
 }
 
 export default function setIntervalWithTimeout(
-  callback: (clear?: () => void) => any,
+  callback: (sec: number, clear?: () => void) => any,
   intervalMs: number,
   handleWrapper = new TimeoutHandler(),
 ): TimeoutHandler {
   let cleared = false;
+  let prev = Date.now();
+  let expected = prev + intervalMs;
 
   const timeout = () => {
+    const now = Date.now();
+    const sec = Math.max(1, Math.round((now - prev) / 1000));
+    const delta = Math.max(0, now - expected);
+    expected += intervalMs;
+    prev = now;
     handleWrapper.handler = setTimeout(() => {
-      callback(() => {
+      callback(sec, () => {
         cleared = true;
         handleWrapper.clear();
       });
       if (!cleared) {
         timeout();
       }
-    }, intervalMs);
+    }, Math.max(0, intervalMs - delta));
   };
   timeout();
   return handleWrapper;

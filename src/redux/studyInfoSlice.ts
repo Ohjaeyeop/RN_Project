@@ -1,15 +1,17 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {Subject} from '../components/screen/StudyTimer';
+import {Subject} from '../data/study';
 import {RootState} from './store';
-import firestore from '@react-native-firebase/firestore';
+import firestore, {
+  FirebaseFirestoreTypes,
+} from '@react-native-firebase/firestore';
+import DateUtil from '../utils/DateUtil';
 
 export type StudyInfo = {
   [subject in Subject]: number;
-} & {total: number};
+} & {total: number; date: number};
 
 type State = {
   studyInfo: StudyInfo;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
 };
 
 const initialState: State = {
@@ -20,30 +22,50 @@ const initialState: State = {
     한국사: 0,
     기타: 0,
     total: 0,
+    date: DateUtil.now(),
   },
-  status: 'idle',
+};
+
+export const getUserRef = async (username: string) => {
+  return await firestore()
+    .collection('Users')
+    .where('username', '==', username)
+    .get();
+};
+
+export const getStudyInfoByPeriod = async (
+  username: string,
+  start: number,
+  end: number,
+) => {
+  const userRef = await getUserRef(username);
+  return await userRef.docs[0].ref
+    .collection('StudyInfo')
+    .where('date', '>=', start)
+    .where('date', '<=', end)
+    .get();
+};
+
+const getStudyInfoRef = async (
+  userRef: FirebaseFirestoreTypes.QuerySnapshot<FirebaseFirestoreTypes.DocumentData>,
+  date: number,
+) => {
+  return await userRef.docs[0].ref
+    .collection('StudyInfo')
+    .where('date', '==', date)
+    .get();
 };
 
 export const getStudyInfo = createAsyncThunk(
   'studyInfo/getStudyInfo',
-  async ({username, date}: {username: string; date: string}) => {
-    const querySnapshot = await firestore()
-      .collection('StudyInfo')
-      .doc(username)
-      .collection(date)
-      .get();
-    if (querySnapshot.size === 0) {
-      await firestore()
-        .collection('StudyInfo')
-        .doc(username)
-        .collection(date)
-        .doc('Info')
-        .set(initialState.studyInfo);
-
-      return initialState.studyInfo;
+  async ({username, date}: {username: string; date: number}) => {
+    try {
+      const userRef = await getUserRef(username);
+      const studyInfoRef = await getStudyInfoRef(userRef, date);
+      return studyInfoRef.docs[0].data() as StudyInfo;
+    } catch {
+      return {...initialState.studyInfo, date: date};
     }
-
-    return querySnapshot.docs[0].data() as StudyInfo;
   },
 );
 
@@ -55,15 +77,19 @@ export const updateStudyInfo = createAsyncThunk(
     studyInfo,
   }: {
     username: string;
-    date: string;
+    date: number;
     studyInfo: StudyInfo;
   }) => {
-    await firestore()
-      .collection('StudyInfo')
-      .doc(username)
-      .collection(date)
-      .doc('Info')
-      .update(studyInfo);
+    if (studyInfo.total > 0) {
+      try {
+        const userRef = await getUserRef(username);
+        const studyInfoRef = await getStudyInfoRef(userRef, date);
+        await studyInfoRef.docs[0].ref.update(studyInfo);
+      } catch {
+        const userRef = await getUserRef(username);
+        await userRef.docs[0].ref.collection('StudyInfo').add(studyInfo);
+      }
+    }
 
     return studyInfo;
   },
@@ -73,31 +99,21 @@ export const studyInfoSlice = createSlice({
   name: 'studyInfo',
   initialState,
   reducers: {
-    increment: (state, action: PayloadAction<Subject>) => {
-      state.studyInfo[action.payload] += 1;
-      state.studyInfo.total += 1;
-    },
-    setIdle: state => {
-      state.status = 'idle';
+    increment: (
+      state,
+      action: PayloadAction<{subject: Subject; sec: number}>,
+    ) => {
+      state.studyInfo[action.payload.subject] += action.payload.sec;
+      state.studyInfo.total += action.payload.sec;
     },
   },
   extraReducers: builder => {
-    builder.addCase(getStudyInfo.pending, state => {
-      state.status = 'loading';
-    });
     builder.addCase(getStudyInfo.fulfilled, (state, action) => {
-      state.status = 'succeeded';
-      state.studyInfo = action.payload;
-    });
-    builder.addCase(getStudyInfo.rejected, state => {
-      state.status = 'failed';
-    });
-    builder.addCase(updateStudyInfo.fulfilled, (state, action) => {
       state.studyInfo = action.payload;
     });
   },
 });
 
-export const {increment, setIdle} = studyInfoSlice.actions;
+export const {increment} = studyInfoSlice.actions;
 export const selectStudyInfo = (state: RootState) => state.studyInfo.studyInfo;
 export default studyInfoSlice.reducer;

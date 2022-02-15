@@ -4,9 +4,8 @@ import AuthForm from './components/screen/AuthForm';
 import {useUser} from './providers/UserProvider';
 
 const App = () => {
-  /*const {user} = useUser();
-  return user === undefined ? <AuthForm /> : <MainTabNavigator />;*/
-  return <MainTabNavigator />;
+  const {user} = useUser();
+  return user === undefined ? <AuthForm /> : <MainTabNavigator />;
 };
 
 export default App;
