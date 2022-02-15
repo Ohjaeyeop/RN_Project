@@ -2,7 +2,7 @@ import React, {useCallback, useRef, useState} from 'react';
 import styled from 'styled-components/native';
 import {color, Theme} from '../theme/color';
 import DateUtil from '../utils/DateUtil';
-import {Platform, View} from 'react-native';
+import {ActivityIndicator, Platform, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useUser} from '../providers/UserProvider';
 import {useFocusEffect} from '@react-navigation/native';
@@ -71,6 +71,7 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
   const firstDay = useRef(0);
   const [displayedDates, setDisplayedDates] = useState<number[]>([]);
   const [studiedDates, setStudiedDates] = useState<number[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const getStudyInfosByMonth = useCallback(
     async (date: number) => {
@@ -79,6 +80,7 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
       }
 
       let dates: number[] = [];
+      setLoading(true);
       await getStudyInfoByPeriod(
         user.username,
         Math.floor(date / 100) * 100 + 1,
@@ -88,7 +90,7 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
           dates.push(querySnapshot.docs[0].data().date);
         }
       });
-
+      setLoading(false);
       setStudiedDates(dates);
     },
     [user],
@@ -174,43 +176,54 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
           </TextBox>
         ))}
       </RowBox>
-
-      {[...new Array(Math.ceil(displayedDates.length / 7) + 1).keys()].map(
-        i => {
-          return (
-            <RowBox key={i}>
-              {[...new Array(7).keys()].map(j => {
-                const index = i * 7 + j;
-                return (
-                  <TextBox
-                    key={index + 7}
-                    style={
-                      displayedDates[index] === selectedDate && {
-                        borderRadius: 20,
-                        borderWidth: 2,
-                        borderColor: color.subPrimary,
+      {loading ? (
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 40 * (Math.ceil(displayedDates.length / 7) + 1),
+          }}>
+          <ActivityIndicator color={color.primary} />
+        </View>
+      ) : (
+        [...new Array(Math.ceil(displayedDates.length / 7) + 1).keys()].map(
+          i => {
+            return (
+              <RowBox key={i}>
+                {[...new Array(7).keys()].map(j => {
+                  const index = i * 7 + j;
+                  return (
+                    <TextBox
+                      key={index + 7}
+                      style={
+                        displayedDates[index] === selectedDate && {
+                          borderRadius: 20,
+                          borderWidth: 2,
+                          borderColor: color.subPrimary,
+                        }
                       }
-                    }
-                    onPress={
-                      index >= firstDay.current && index < displayedDates.length
-                        ? () => selectDate(displayedDates[index])
-                        : undefined
-                    }>
-                    {studiedDates.includes(displayedDates[index]) && <Mark />}
-                    <Date
-                      index={index}
-                      firstDay={firstDay.current}
-                      length={displayedDates.length}>
-                      {index < displayedDates.length
-                        ? displayedDates[index] % 100
-                        : index - displayedDates.length + 1}
-                    </Date>
-                  </TextBox>
-                );
-              })}
-            </RowBox>
-          );
-        },
+                      onPress={
+                        index >= firstDay.current &&
+                        index < displayedDates.length
+                          ? () => selectDate(displayedDates[index])
+                          : undefined
+                      }>
+                      {studiedDates.includes(displayedDates[index]) && <Mark />}
+                      <Date
+                        index={index}
+                        firstDay={firstDay.current}
+                        length={displayedDates.length}>
+                        {index < displayedDates.length
+                          ? displayedDates[index] % 100
+                          : index - displayedDates.length + 1}
+                      </Date>
+                    </TextBox>
+                  );
+                })}
+              </RowBox>
+            );
+          },
+        )
       )}
     </CalendarView>
   );

@@ -12,6 +12,7 @@ import DateUtil from '../utils/DateUtil';
 import getDisplayedTime from '../utils/getDisplayedTime';
 import styled from 'styled-components/native';
 import {StyledText} from './shared/StyledText';
+import {Period} from './GraphByPeriod';
 
 const SubText = styled.Text`
   color: ${({theme}: {theme: Theme}) => theme.subText};
@@ -25,7 +26,13 @@ const Line = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.box};
 `;
 
-const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
+const Graph = ({
+  studyTimes,
+  period,
+}: {
+  studyTimes: number[][];
+  period: Period;
+}) => {
   const graphHeight = 157;
   const [selectedIndex, setIndex] = useState(4);
   const maxValue = Math.max(
@@ -34,9 +41,9 @@ const Graph = ({studyTimes}: {studyTimes: number[][]}) => {
   );
 
   const xAxisValue = (time: number[], index: number) => {
-    if (studyTimes[0][0] === studyTimes[0][1]) {
+    if (period === '일간') {
       return `${DateUtil.getMonth(time[1])}.${DateUtil.getDate(time[1])}`;
-    } else if (DateUtil.betweenDay(studyTimes[0][0], studyTimes[0][1]) === 6) {
+    } else if (period === '주간') {
       if (index === 4) {
         return '이번 주';
       }

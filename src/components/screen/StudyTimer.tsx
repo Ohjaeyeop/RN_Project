@@ -1,6 +1,7 @@
 import React, {useCallback, useRef, useState} from 'react';
 import {
   ActivityIndicator,
+  Platform,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -149,14 +150,14 @@ const StudyTimer = () => {
         />
       </View>
       {studyInfoStatus === 'succeeded' ? (
-        <>
-          <View style={styles.displayedTime}>
+        <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}>
+          <View style={[styles.displayedTime]}>
             <StyledText
               style={{fontSize: 41, fontWeight: 'bold', lineHeight: 61}}>
               {getDisplayedTime(studyInfo.total)}
             </StyledText>
           </View>
-          <ScrollView style={styles.subjectBox}>
+          <View style={{}}>
             {subjects.map(subject => (
               <View key={subject} style={styles.subjectLine}>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -186,11 +187,11 @@ const StudyTimer = () => {
                 </StyledText>
               </View>
             ))}
-          </ScrollView>
-        </>
+          </View>
+        </ScrollView>
       ) : (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <ActivityIndicator />
+          <ActivityIndicator color={color.primary} />
         </View>
       )}
     </TimerContainer>
@@ -204,11 +205,6 @@ const styles = StyleSheet.create({
   displayedTime: {
     alignItems: 'center',
     marginVertical: 12,
-  },
-  subjectBox: {
-    borderTopWidth: 0.5,
-    borderColor: color.gray,
-    flex: 1,
   },
   subjectLine: {
     flexDirection: 'row',

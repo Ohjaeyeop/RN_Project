@@ -1,5 +1,11 @@
 import React, {useCallback, useState} from 'react';
-import {Pressable, View, Text, StyleSheet} from 'react-native';
+import {
+  Pressable,
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import {useUser} from '../providers/UserProvider';
 import DateUtil from '../utils/DateUtil';
 import {color, Theme} from '../theme/color';
@@ -12,11 +18,19 @@ const SelectBox = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.box2};
 `;
 
+export type Period = '일간' | '주간' | '월간';
+const periods: Period[] = ['일간', '주간', '월간'];
+
+type StudyTimesByPeriod = {
+  [index in Period]: number[][];
+};
+
 const GraphByPeriod = ({date}: {date: number}) => {
   const day = DateUtil.getDay(date) > 0 ? DateUtil.getDay(date) : 7;
   const {user} = useUser();
-  const [period, setPeriod] = useState<'일간' | '주간' | '월간'>('일간');
-  const [studyTimes, setStudyTimes] = useState<number[][]>([[]]);
+  const [period, setPeriod] = useState<Period>('일간');
+  const [studyTimes, setStudyTimes] = useState<StudyTimesByPeriod>();
+  const [loading, setLoading] = useState(true);
 
   const getStudyTime = useCallback(
     async (start: number, end: number) => {
@@ -62,23 +76,26 @@ const GraphByPeriod = ({date}: {date: number}) => {
     [date, day],
   );
 
-  const getData = useCallback(
-    async period => {
+  const getData = useCallback(async () => {
+    setLoading(true);
+    let obj: StudyTimesByPeriod = {} as StudyTimesByPeriod;
+    for (let i = 0; i < 3; i++) {
       let data: number[][] = [];
-      for (let i = -4; i <= 0; i++) {
-        const {start, end} = getRange(i, period);
+      for (let j = -4; j <= 0; j++) {
+        const {start, end} = getRange(j, periods[i]);
         const total = await getStudyTime(start, end);
         data.push([start, end, total]);
       }
-      setStudyTimes(data);
-    },
-    [getRange, getStudyTime],
-  );
+      obj[periods[i]] = data;
+    }
+    setStudyTimes(obj);
+    setLoading(false);
+  }, [getRange, getStudyTime]);
 
   useFocusEffect(
     useCallback(() => {
-      getData(period);
-    }, [getData, period]),
+      getData();
+    }, [getData]),
   );
 
   return (
@@ -133,7 +150,11 @@ const GraphByPeriod = ({date}: {date: number}) => {
           </Text>
         </Pressable>
       </SelectBox>
-      <Graph studyTimes={studyTimes} />
+      {studyTimes && !loading ? (
+        <Graph studyTimes={studyTimes[period]} period={period} />
+      ) : (
+        <ActivityIndicator />
+      )}
     </View>
   );
 };

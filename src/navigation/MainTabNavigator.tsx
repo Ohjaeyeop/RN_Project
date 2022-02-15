@@ -64,12 +64,12 @@ const MainTabNavigator = () => {
         screenOptions={{
           headerShown: false,
           tabBarBackground: () => <TabBarBackground />,
+          tabBarLabelPosition: 'below-icon',
         }}>
         <Tab.Screen
           name="Diary"
           component={Diary}
           options={{
-            tabBarLabelPosition: 'below-icon',
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'캘린더'} />
             ),
