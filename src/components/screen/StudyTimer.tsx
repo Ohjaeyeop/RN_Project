@@ -58,7 +58,6 @@ const StudyTimer = () => {
   };
 
   const studyInfo = useAppSelector(selectStudyInfo);
-  const studyInfoStatus = useAppSelector(state => state.studyInfo.status);
 
   const updateInfo = () => {
     callRef.current?.();
@@ -149,7 +148,7 @@ const StudyTimer = () => {
           onPress={selectedDate !== today ? () => changeDate(1) : undefined}
         />
       </View>
-      {studyInfoStatus === 'succeeded' ? (
+      {studyInfo.date === selectedDate ? (
         <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}>
           <View style={[styles.displayedTime]}>
             <StyledText

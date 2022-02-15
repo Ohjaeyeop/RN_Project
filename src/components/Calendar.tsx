@@ -110,24 +110,36 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
     setDisplayedDates(dates);
   }, []);
 
+  const changeCalendar = useCallback(
+    (date: number) => {
+      firstDay.current = DateUtil.getFirstDay(date);
+      getCalendarInfo(date);
+      getStudyInfosByMonth(date);
+    },
+    [getCalendarInfo, getStudyInfosByMonth],
+  );
+
   useFocusEffect(
     useCallback(() => {
-      firstDay.current = DateUtil.getFirstDay(lastDate);
-      getCalendarInfo(lastDate);
-      getStudyInfosByMonth(lastDate);
-    }, [getCalendarInfo, getStudyInfosByMonth, lastDate]),
+      setLastDate(today);
+      changeCalendar(today);
+    }, [changeCalendar, today]),
   );
 
   const changeToPrevMonth = () => {
     const changedDate = DateUtil.getLastDateOfPrevMonth(lastDate);
     setLastDate(changedDate);
+    changeCalendar(changedDate);
   };
 
   const changeToNextMonth = () => {
-    const changedDate = DateUtil.getLastDateOfNextMonth(lastDate);
-    DateUtil.getMonth(changedDate) === DateUtil.getMonth(today)
-      ? setLastDate(today)
-      : setLastDate(changedDate);
+    let changedDate = DateUtil.getLastDateOfNextMonth(lastDate);
+    changedDate =
+      DateUtil.getMonth(changedDate) === DateUtil.getMonth(today)
+        ? today
+        : changedDate;
+    setLastDate(changedDate);
+    changeCalendar(changedDate);
   };
 
   return (

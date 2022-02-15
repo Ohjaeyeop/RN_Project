@@ -12,7 +12,6 @@ export type StudyInfo = {
 
 type State = {
   studyInfo: StudyInfo;
-  status: 'loading' | 'succeeded';
 };
 
 const initialState: State = {
@@ -25,7 +24,6 @@ const initialState: State = {
     total: 0,
     date: DateUtil.now(),
   },
-  status: 'loading',
 };
 
 export const getUserRef = async (username: string) => {
@@ -110,11 +108,7 @@ export const studyInfoSlice = createSlice({
     },
   },
   extraReducers: builder => {
-    builder.addCase(getStudyInfo.pending, state => {
-      state.status = 'loading';
-    });
     builder.addCase(getStudyInfo.fulfilled, (state, action) => {
-      state.status = 'succeeded';
       state.studyInfo = action.payload;
     });
   },

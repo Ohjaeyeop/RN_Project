@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
 import {Theme} from '../../theme/color';
@@ -7,6 +7,7 @@ import {View, useWindowDimensions} from 'react-native';
 import DateUtil from '../../utils/DateUtil';
 import GraphBySubject from '../GraphBySubject';
 import GraphByPeriod from '../GraphByPeriod';
+import {useFocusEffect} from '@react-navigation/native';
 
 const DiarayContainer = styled.SafeAreaView`
   flex: 1;
@@ -33,6 +34,12 @@ const Diary = () => {
   const selectDate = (date: number) => {
     setSelectedDate(date);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => setSelectedDate(today);
+    }, [today]),
+  );
 
   return (
     <DiarayContainer>
