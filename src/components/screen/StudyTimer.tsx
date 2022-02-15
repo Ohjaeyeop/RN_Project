@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -17,7 +17,6 @@ import {
   getStudyInfo,
   increment,
   selectStudyInfo,
-  StudyInfo,
   updateStudyInfo,
 } from '../../redux/studyInfoSlice';
 import getDisplayedTime from '../../utils/getDisplayedTime';
@@ -42,7 +41,6 @@ const StudyTimer = () => {
   const {user} = useUser();
   const [selectedSubject, setSelectedSubject] = useState<Subject>();
   const [selectedDate, setSelectedDate] = useState(today);
-  const dateRef = useRef(selectedDate);
   const [offset, setOffset] = useState(0);
   const handler = useRef(new TimeoutHandler()).current;
   const dispatch = useAppDispatch();
@@ -59,7 +57,6 @@ const StudyTimer = () => {
   };
 
   const studyInfo = useAppSelector(selectStudyInfo);
-  const studyInfoRef = useRef<StudyInfo>(studyInfo);
   const studyInfoStatus = useAppSelector(state => state.studyInfo.status);
 
   const updateInfo = () => {
@@ -109,18 +106,11 @@ const StudyTimer = () => {
       updateInfo();
     }
     const changedDate = DateUtil.dateFromNow(offset + change);
-    user &&
-      dispatch(getStudyInfo({username: user.username, date: changedDate}));
     setOffset(offset + change);
     setSelectedDate(changedDate);
-    dateRef.current = changedDate;
+    user &&
+      dispatch(getStudyInfo({username: user.username, date: changedDate}));
   };
-
-  useEffect(() => {
-    if (selectedDate === today) {
-      studyInfoRef.current = studyInfo;
-    }
-  }, [selectedDate, studyInfo, today]);
 
   const handlePress = (subject: Subject) => {
     if (selectedDate !== today) {

@@ -6,7 +6,7 @@ import {color, Theme} from '../theme/color';
 import Graph from './Graph';
 import {useFocusEffect} from '@react-navigation/native';
 import styled from 'styled-components/native';
-import {getStudyInfoByPeriod, getUserRef} from '../redux/studyInfoSlice';
+import {getStudyInfoByPeriod} from '../redux/studyInfoSlice';
 
 const SelectBox = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.box2};

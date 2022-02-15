@@ -66,7 +66,7 @@ export const getStudyInfo = createAsyncThunk(
       const studyInfoRef = await getStudyInfoRef(userRef, date);
       return studyInfoRef.docs[0].data() as StudyInfo;
     } catch {
-      return initialState.studyInfo;
+      return {...initialState.studyInfo, date: date};
     }
   },
 );
@@ -115,9 +115,6 @@ export const studyInfoSlice = createSlice({
     });
     builder.addCase(getStudyInfo.fulfilled, (state, action) => {
       state.status = 'succeeded';
-      state.studyInfo = action.payload;
-    });
-    builder.addCase(updateStudyInfo.fulfilled, (state, action) => {
       state.studyInfo = action.payload;
     });
   },

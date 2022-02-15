@@ -4,11 +4,10 @@ import {color, Theme} from '../theme/color';
 import DateUtil from '../utils/DateUtil';
 import {Platform, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../providers/UserProvider';
 import {useFocusEffect} from '@react-navigation/native';
 import {StyledText} from './shared/StyledText';
-import {getStudyInfoByPeriod, getUserRef} from '../redux/studyInfoSlice';
+import {getStudyInfoByPeriod} from '../redux/studyInfoSlice';
 
 const CalendarView = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.background};
