@@ -16,12 +16,19 @@ const Title = styled.Text`
   bottom: 8px;
 `;
 
-const ScreenHeader = ({title}: {title: string}) => {
+const ScreenHeader = ({
+  title,
+  children,
+}: {
+  title: string;
+  children: JSX.Element;
+}) => {
   const safeArea = useSafeAreaInsets();
 
   return (
     <Header style={{height: 80 - safeArea.top}}>
       <Title>{title}</Title>
+      {children}
     </Header>
   );
 };
