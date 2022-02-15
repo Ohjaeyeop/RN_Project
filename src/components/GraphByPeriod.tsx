@@ -7,6 +7,7 @@ import {color, Theme} from '../theme/color';
 import Graph from './Graph';
 import {useFocusEffect} from '@react-navigation/native';
 import styled from 'styled-components/native';
+import {getUserRef} from '../redux/studyInfoSlice';
 
 const SelectBox = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.box2};
@@ -24,17 +25,17 @@ const GraphByPeriod = ({date}: {date: number}) => {
         return 0;
       }
       let total = 0;
-      for (let i = start; i <= end; i++) {
-        const studyInfo = await firestore()
-          .collection('StudyInfo')
-          .doc(user.username)
-          .collection(i.toString())
-          .get();
-
-        if (studyInfo.size > 0) {
-          total += studyInfo.docs[0].data().total;
-        }
-      }
+      const userRef = await getUserRef(user.username);
+      await userRef.docs[0].ref
+        .collection('StudyInfo')
+        .where('date', '>=', start)
+        .where('date', '<=', end)
+        .get()
+        .then(querySnapshot => {
+          if (querySnapshot.docs.length) {
+            total += querySnapshot.docs[0].data().total;
+          }
+        });
       return total;
     },
     [user],

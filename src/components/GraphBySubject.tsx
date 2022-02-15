@@ -17,10 +17,7 @@ const GraphBySubject = ({date}: {date: number}) => {
 
   useFocusEffect(
     useCallback(() => {
-      user &&
-        dispatch(
-          getStudyInfo({username: user.username, date: date.toString()}),
-        );
+      user && dispatch(getStudyInfo({username: user.username, date: date}));
     }, [date, dispatch, user]),
   );
 

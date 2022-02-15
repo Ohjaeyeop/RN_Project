@@ -52,7 +52,7 @@ const StudyTimer = () => {
       dispatch(
         updateStudyInfo({
           username: user.username,
-          date: today.toString(),
+          date: today,
           studyInfo: studyInfo,
         }),
       );
@@ -78,20 +78,17 @@ const StudyTimer = () => {
 
   const startTimer = (subject: Subject) => {
     setIntervalWithTimeout(
-      () => {
-        dispatch(increment(subject));
+      sec => {
+        dispatch(increment({subject, sec}));
       },
-      1000,
+      999,
       handler,
     );
   };
 
   useFocusEffect(
     useCallback(() => {
-      user &&
-        dispatch(
-          getStudyInfo({username: user.username, date: today.toString()}),
-        );
+      user && dispatch(getStudyInfo({username: user.username, date: today}));
     }, [dispatch, today, user]),
   );
 
@@ -113,9 +110,7 @@ const StudyTimer = () => {
     }
     const changedDate = DateUtil.dateFromNow(offset + change);
     user &&
-      dispatch(
-        getStudyInfo({username: user.username, date: changedDate.toString()}),
-      );
+      dispatch(getStudyInfo({username: user.username, date: changedDate}));
     setOffset(offset + change);
     setSelectedDate(changedDate);
     dateRef.current = changedDate;

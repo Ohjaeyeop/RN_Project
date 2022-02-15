@@ -1,11 +1,14 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {Subject} from '../data/study';
 import {RootState} from './store';
-import firestore from '@react-native-firebase/firestore';
+import firestore, {
+  FirebaseFirestoreTypes,
+} from '@react-native-firebase/firestore';
+import DateUtil from '../utils/DateUtil';
 
 export type StudyInfo = {
   [subject in Subject]: number;
-} & {total: number};
+} & {total: number; date: number};
 
 type State = {
   studyInfo: StudyInfo;
@@ -20,19 +23,34 @@ const initialState: State = {
     한국사: 0,
     기타: 0,
     total: 0,
+    date: DateUtil.now(),
   },
   status: 'loading',
 };
 
+export const getUserRef = async (username: string) => {
+  return await firestore()
+    .collection('Users')
+    .where('username', '==', username)
+    .get();
+};
+
+const getStudyInfoRef = async (
+  userRef: FirebaseFirestoreTypes.QuerySnapshot<FirebaseFirestoreTypes.DocumentData>,
+  date: number,
+) => {
+  return await userRef.docs[0].ref
+    .collection('StudyInfo')
+    .where('date', '==', date)
+    .get();
+};
+
 export const getStudyInfo = createAsyncThunk(
   'studyInfo/getStudyInfo',
-  async ({username, date}: {username: string; date: string}) => {
+  async ({username, date}: {username: string; date: number}) => {
     try {
-      const studyInfoRef = await firestore()
-        .collection('StudyInfo')
-        .doc(username)
-        .collection(date)
-        .get();
+      const userRef = await getUserRef(username);
+      const studyInfoRef = await getStudyInfoRef(userRef, date);
       return studyInfoRef.docs[0].data() as StudyInfo;
     } catch {
       return initialState.studyInfo;
@@ -48,24 +66,17 @@ export const updateStudyInfo = createAsyncThunk(
     studyInfo,
   }: {
     username: string;
-    date: string;
+    date: number;
     studyInfo: StudyInfo;
   }) => {
     if (studyInfo.total > 0) {
       try {
-        await firestore()
-          .collection('StudyInfo')
-          .doc(username)
-          .collection(date)
-          .doc('Info')
-          .update(studyInfo);
+        const userRef = await getUserRef(username);
+        const studyInfoRef = await getStudyInfoRef(userRef, date);
+        await studyInfoRef.docs[0].ref.update(studyInfo);
       } catch {
-        await firestore()
-          .collection('StudyInfo')
-          .doc(username)
-          .collection(date)
-          .doc('Info')
-          .set(studyInfo);
+        const userRef = await getUserRef(username);
+        await userRef.docs[0].ref.collection('StudyInfo').add(studyInfo);
       }
     }
 
@@ -77,9 +88,12 @@ export const studyInfoSlice = createSlice({
   name: 'studyInfo',
   initialState,
   reducers: {
-    increment: (state, action: PayloadAction<Subject>) => {
-      state.studyInfo[action.payload] += 1;
-      state.studyInfo.total += 1;
+    increment: (
+      state,
+      action: PayloadAction<{subject: Subject; sec: number}>,
+    ) => {
+      state.studyInfo[action.payload.subject] += action.payload.sec;
+      state.studyInfo.total += action.payload.sec;
     },
   },
   extraReducers: builder => {
