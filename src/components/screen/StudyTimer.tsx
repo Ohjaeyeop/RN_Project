@@ -1,7 +1,6 @@
 import React, {useCallback, useRef, useState} from 'react';
 import {
   ActivityIndicator,
-  Platform,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -18,6 +17,7 @@ import {
   getStudyInfo,
   increment,
   selectStudyInfo,
+  setIdle,
   updateStudyInfo,
 } from '../../redux/studyInfoSlice';
 import getDisplayedTime from '../../utils/getDisplayedTime';
@@ -89,6 +89,8 @@ const StudyTimer = () => {
       setSelectedDate(today);
       setOffset(0);
       user && dispatch(getStudyInfo({username: user.username, date: today}));
+      dispatch(setIdle());
+      console.log(1);
     }, [dispatch, today, user]),
   );
 

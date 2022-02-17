@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import styled from 'styled-components/native';
 import {color, Theme} from '../../theme/color';
 import DateUtil from '../../utils/DateUtil';
@@ -9,11 +9,9 @@ import {useFocusEffect} from '@react-navigation/native';
 import {StyledText} from '../shared/StyledText';
 import {
   getStudyInfoByPeriod,
-  getUserRef,
   selectUpdateState,
 } from '../../redux/studyInfoSlice';
 import {useAppSelector} from '../../hooks/useReduxFunction';
-import firestore from '@react-native-firebase/firestore';
 
 const CalendarView = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.background};
@@ -78,13 +76,7 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
   const [displayedDates, setDisplayedDates] = useState<number[]>([]);
   const [studiedDates, setStudiedDates] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
-  const studyInfoRef = useMemo(() => {
-    if (user) {
-      return getUserRef(user.username).then(querySnapshot =>
-        querySnapshot.docs[0].ref.collection('StudyInfo'),
-      );
-    }
-  }, [user]);
+  const updateState = useAppSelector(selectUpdateState);
 
   const getStudyInfosByMonth = useCallback(
     async (date: number) => {
@@ -130,23 +122,13 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
     [getCalendarInfo, getStudyInfosByMonth],
   );
 
-  useEffect(() => {
-    const subscriber = studyInfoRef?.then(ref =>
-      ref.onSnapshot(snapshot => {
-        let dates: number[] = [];
-        snapshot.docs.map(doc => {
-          dates.push(doc.data().date);
-        });
-        setStudiedDates(dates);
-      }),
-    );
-  }, [studyInfoRef]);
-
   useFocusEffect(
     useCallback(() => {
       setLastDate(today);
-      getCalendarInfo(today);
-    }, [getCalendarInfo, today]),
+      setLoading(true);
+      updateState === 'succeeded' && getStudyInfosByMonth(today);
+      updateState === 'succeeded' && getCalendarInfo(today);
+    }, [getCalendarInfo, getStudyInfosByMonth, today, updateState]),
   );
 
   const changeToPrevMonth = () => {

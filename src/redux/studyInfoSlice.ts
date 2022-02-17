@@ -25,7 +25,7 @@ const initialState: State = {
     total: 0,
     date: DateUtil.now(),
   },
-  updateState: 'idle',
+  updateState: 'succeeded',
 };
 
 export const getUserRef = async (username: string) => {
@@ -121,12 +121,13 @@ export const studyInfoSlice = createSlice({
       state.updateState = 'loading';
     });
     builder.addCase(updateStudyInfo.fulfilled, state => {
+      console.log(2);
       state.updateState = 'succeeded';
     });
   },
 });
 
-export const {increment} = studyInfoSlice.actions;
+export const {increment, setIdle} = studyInfoSlice.actions;
 export const selectStudyInfo = (state: RootState) => state.studyInfo.studyInfo;
 export const selectUpdateState = (state: RootState) =>
   state.studyInfo.updateState;
