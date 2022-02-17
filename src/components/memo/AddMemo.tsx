@@ -1,25 +1,34 @@
-import React, {useRef} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import styled from 'styled-components/native';
 import {Theme} from '../../theme/color';
 import ScreenHeader from '../shared/ScreenHeader';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-} from 'react-native';
+import {View, TouchableOpacity, TextInput, ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {StyledText} from '../shared/StyledText';
 import {AddMemoProps} from '../../navigation/MemoStackNavigator';
+import firestore from '@react-native-firebase/firestore';
 
 const MemoContainer = styled.SafeAreaView`
   flex: 1;
   background-color: ${({theme}: {theme: Theme}) => theme.background};
 `;
 
-const AddMemo = ({navigation}: AddMemoProps) => {
+const AddMemo = ({route, navigation}: AddMemoProps) => {
+  const {username} = route.params;
+  const memosRef = useMemo(
+    () => firestore().collection('Memo').doc(username).collection('memos'),
+    [username],
+  );
   const textInputRef = useRef<TextInput>(null);
+  const [text, setText] = useState('');
+
+  const addMemo = async () => {
+    await memosRef.add({timestamp: new Date().toISOString(), text});
+  };
+
+  const editMemo = async () => {
+    await memosRef.doc().update({timestamp: new Date().toISOString(), text});
+  };
 
   return (
     <MemoContainer>
@@ -40,7 +49,10 @@ const AddMemo = ({navigation}: AddMemoProps) => {
               justifyContent: 'center',
               alignItems: 'center',
             }}
-            onPress={() => navigation.pop()}>
+            onPress={() => {
+              addMemo();
+              navigation.pop();
+            }}>
             <Icon name={'md-arrow-back-sharp'} size={20} />
           </TouchableOpacity>
           <TouchableOpacity
@@ -62,6 +74,9 @@ const AddMemo = ({navigation}: AddMemoProps) => {
             autoFocus={true}
             style={{fontSize: 16, fontWeight: '700'}}
             multiline={true}
+            autoCorrect={false}
+            autoCapitalize="none"
+            onChangeText={setText}
           />
         </View>
       </ScrollView>

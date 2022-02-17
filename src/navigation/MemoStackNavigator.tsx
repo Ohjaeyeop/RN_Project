@@ -8,7 +8,7 @@ import AddMemo from '../components/memo/AddMemo';
 
 type MemoStackParamList = {
   MemoList: undefined;
-  AddMemo: undefined;
+  AddMemo: {id?: string; username: string | undefined};
 };
 
 export type MemoListProps = NativeStackScreenProps<
