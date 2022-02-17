@@ -21,7 +21,7 @@ const ScreenHeader = ({
   children,
 }: {
   title: string;
-  children: JSX.Element;
+  children?: JSX.Element;
 }) => {
   const safeArea = useSafeAreaInsets();
 

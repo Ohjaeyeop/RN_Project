@@ -7,7 +7,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useUser} from '../providers/UserProvider';
 import {useFocusEffect} from '@react-navigation/native';
 import {StyledText} from './shared/StyledText';
-import {getStudyInfoByPeriod} from '../redux/studyInfoSlice';
+import {getStudyInfoByPeriod, selectUpdateState} from '../redux/studyInfoSlice';
+import {useAppSelector} from '../hooks/useReduxFunction';
 
 const CalendarView = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.background};
@@ -72,6 +73,7 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
   const [displayedDates, setDisplayedDates] = useState<number[]>([]);
   const [studiedDates, setStudiedDates] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
+  const updateState = useAppSelector(selectUpdateState);
 
   const getStudyInfosByMonth = useCallback(
     async (date: number) => {
@@ -86,12 +88,10 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
         Math.floor(date / 100) * 100 + 1,
         date,
       ).then(querySnapshot => {
-        if (querySnapshot.size > 0) {
-          dates.push(querySnapshot.docs[0].data().date);
-        }
+        querySnapshot.docs.map(doc => dates.push(doc.data().date));
       });
-      setLoading(false);
       setStudiedDates(dates);
+      setLoading(false);
     },
     [user],
   );
@@ -111,10 +111,10 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
   }, []);
 
   const changeCalendar = useCallback(
-    (date: number) => {
+    async (date: number) => {
       firstDay.current = DateUtil.getFirstDay(date);
+      await getStudyInfosByMonth(date);
       getCalendarInfo(date);
-      getStudyInfosByMonth(date);
     },
     [getCalendarInfo, getStudyInfosByMonth],
   );
@@ -122,8 +122,10 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
   useFocusEffect(
     useCallback(() => {
       setLastDate(today);
-      changeCalendar(today);
-    }, [changeCalendar, today]),
+      if (updateState === 'succeeded') {
+        changeCalendar(today);
+      }
+    }, [changeCalendar, updateState, today]),
   );
 
   const changeToPrevMonth = () => {

@@ -1,5 +1,10 @@
 import React, {useImperativeHandle, useRef} from 'react';
-import {useWindowDimensions, View} from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import styled from 'styled-components/native';
 import {color, Theme} from '../../theme/color';
 import Modal from 'react-native-modalbox';
@@ -12,7 +17,8 @@ const StyledText = styled.Text`
 
 const StyledModal = styled(Modal)`
   background-color: ${({theme}: {theme: Theme}) => theme.background};
-  border-radius: 10px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
   padding: 20px 24px;
 `;
 
@@ -54,7 +60,6 @@ const TodoModal = React.forwardRef<
   TodoModalRef,
   React.PropsWithChildren<Props>
 >((props, ref) => {
-  const width = useWindowDimensions().width;
   const height = useWindowDimensions().height;
   const safeArea = useSafeAreaInsets();
   const {title, body, setTitle, setBody} = props;
@@ -76,7 +81,7 @@ const TodoModal = React.forwardRef<
       swipeToClose={false}
       coverScreen={true}
       backdropOpacity={0.5}
-      style={{height: height * 0.6}}
+      style={{height: height * 0.3}}
       ref={modalRef}>
       <View style={{paddingHorizontal: safeArea.left}}>
         <StyledText
@@ -90,13 +95,16 @@ const TodoModal = React.forwardRef<
           autoCapitalize="none"
           placeholder="제목을 적어주세요"
           value={title}
+          autoFocus={true}
           onChangeText={setTitle}
+          autoCorrect={false}
         />
         <TodoBodyInput
           autoCapitalize="none"
           placeholder="할 일을 적어주세요"
           value={body}
           onChangeText={setBody}
+          autoCorrect={false}
         />
         {props.children}
       </View>

@@ -40,9 +40,9 @@ const GraphByPeriod = ({date}: {date: number}) => {
       let total = 0;
       await getStudyInfoByPeriod(user.username, start, end).then(
         querySnapshot => {
-          if (querySnapshot.size > 0) {
-            total += querySnapshot.docs[0].data().total;
-          }
+          querySnapshot.docs.map(doc => {
+            total += doc.data().total;
+          });
         },
       );
       return total;

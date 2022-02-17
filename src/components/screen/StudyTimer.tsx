@@ -48,6 +48,7 @@ const StudyTimer = () => {
   const callRef = useRef<() => void>();
   callRef.current = () => {
     user &&
+      selectedDate === today &&
       dispatch(
         updateStudyInfo({
           username: user.username,
@@ -85,6 +86,8 @@ const StudyTimer = () => {
 
   useFocusEffect(
     useCallback(() => {
+      setSelectedDate(today);
+      setOffset(0);
       user && dispatch(getStudyInfo({username: user.username, date: today}));
     }, [dispatch, today, user]),
   );
