@@ -67,7 +67,13 @@ const Memo = ({navigation}: MemoListProps) => {
               borderColor: color.lightGray,
               paddingTop: index === 0 ? 0 : 16,
               paddingBottom: 8,
-            }}>
+            }}
+            onPress={() =>
+              navigation.navigate('AddMemo', {
+                id: memo.id,
+                username: user?.username,
+              })
+            }>
             <Text style={{fontSize: 16, fontWeight: '700', color: color.dark}}>
               {memo.text.split('\n')[0]}
             </Text>

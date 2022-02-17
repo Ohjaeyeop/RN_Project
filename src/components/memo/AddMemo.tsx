@@ -1,4 +1,4 @@
-import React, {useMemo, useRef, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import styled from 'styled-components/native';
 import {Theme} from '../../theme/color';
 import ScreenHeader from '../shared/ScreenHeader';
@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {StyledText} from '../shared/StyledText';
 import {AddMemoProps} from '../../navigation/MemoStackNavigator';
 import firestore from '@react-native-firebase/firestore';
+import {useFocusEffect} from '@react-navigation/native';
 
 const MemoContainer = styled.SafeAreaView`
   flex: 1;
@@ -14,7 +15,7 @@ const MemoContainer = styled.SafeAreaView`
 `;
 
 const AddMemo = ({route, navigation}: AddMemoProps) => {
-  const {username} = route.params;
+  const {username, id} = route.params;
   const memosRef = useMemo(
     () => firestore().collection('Memo').doc(username).collection('memos'),
     [username],
@@ -22,12 +23,23 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
   const textInputRef = useRef<TextInput>(null);
   const [text, setText] = useState('');
 
+  useFocusEffect(
+    useCallback(() => {
+      if (id) {
+        memosRef
+          .doc(id)
+          .get()
+          .then(doc => setText(doc.data()?.text));
+      }
+    }, [id, memosRef]),
+  );
+
   const addMemo = async () => {
     text && (await memosRef.add({timestamp: new Date().toISOString(), text}));
   };
 
   const editMemo = async () => {
-    await memosRef.doc().update({timestamp: new Date().toISOString(), text});
+    await memosRef.doc(id).update({timestamp: new Date().toISOString(), text});
   };
 
   return (
@@ -76,6 +88,7 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
             multiline={true}
             autoCorrect={false}
             autoCapitalize="none"
+            value={text}
             onChangeText={setText}
           />
         </View>
