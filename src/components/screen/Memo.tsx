@@ -2,10 +2,19 @@ import React, {useEffect, useMemo, useState} from 'react';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
 import {color, Theme} from '../../theme/color';
-import {ScrollView, TouchableOpacity, Text, View} from 'react-native';
+import {
+  ScrollView,
+  TouchableOpacity,
+  Text,
+  View,
+  StyleSheet,
+  Pressable,
+} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../../providers/UserProvider';
 import {MemoListProps} from '../../navigation/MemoStackNavigator';
+import {SwipeListView} from 'react-native-swipe-list-view';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 const MemoContainer = styled.SafeAreaView`
   flex: 1;
@@ -26,6 +35,10 @@ const Memo = ({navigation}: MemoListProps) => {
     [user?.username],
   );
   const [memos, setMemos] = useState<MemoObj[]>([]);
+
+  const deleteMemo = async (id: string) => {
+    await memosRef.doc(id).delete();
+  };
 
   useEffect(() => {
     const subscriber = memosRef.onSnapshot(querySnapshot => {
@@ -57,39 +70,64 @@ const Memo = ({navigation}: MemoListProps) => {
           </TouchableOpacity>
         </TouchableOpacity>
       </ScreenHeader>
-      <ScrollView style={{flex: 1}}>
-        {memos.map((memo, index) => (
-          <TouchableOpacity
-            key={memo.timestamp}
+      <SwipeListView
+        data={memos}
+        keyExtractor={memo => memo.timestamp}
+        renderItem={({item}) => (
+          <Pressable
+            key={item.timestamp}
             style={{
               paddingHorizontal: 20,
               borderBottomWidth: 1,
               borderColor: color.lightGray,
-              paddingTop: index === 0 ? 0 : 16,
+              paddingTop: 16,
               paddingBottom: 8,
+              backgroundColor: 'white',
             }}
             onPress={() =>
               navigation.navigate('AddMemo', {
-                id: memo.id,
+                id: item.id,
                 username: user?.username,
               })
             }>
-            <Text style={{fontSize: 16, fontWeight: '700', color: color.dark}}>
-              {memo.text.split('\n')[0]}
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: '700',
+                color: color.dark,
+              }}
+              numberOfLines={1}>
+              {item.text.split('\n')[0]}
             </Text>
             <View style={{flexDirection: 'row'}}>
               <Text style={{color: color.gray, marginRight: 8}}>
-                {memo.timestamp.slice(0, 10).split('-').join('.')}.
+                {item.timestamp.slice(0, 10).split('-').join('.')}.
               </Text>
               <Text style={{color: color.gray}}>
-                {memo.text.split('\n')[1]
-                  ? memo.text.split('\n')[1]
+                {item.text.split('\n')[1]
+                  ? item.text.split('\n')[1]
                   : '추가 텍스트 없음'}
               </Text>
             </View>
+          </Pressable>
+        )}
+        renderHiddenItem={({item}) => (
+          <TouchableOpacity
+            style={{
+              position: 'absolute',
+              right: 0,
+              backgroundColor: color.red,
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: 70,
+              height: '100%',
+            }}
+            onPress={() => deleteMemo(item.id)}>
+            <Icon name={'delete'} size={25} color={'white'} />
           </TouchableOpacity>
-        ))}
-      </ScrollView>
+        )}
+        rightOpenValue={-70}
+      />
     </MemoContainer>
   );
 };

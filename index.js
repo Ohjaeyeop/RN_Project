@@ -1,7 +1,7 @@
 /**
  * @format
  */
-
+import 'react-native-gesture-handler';
 import React, {useEffect, useState} from 'react';
 import {Appearance, AppRegistry} from 'react-native';
 import App from './src/App';

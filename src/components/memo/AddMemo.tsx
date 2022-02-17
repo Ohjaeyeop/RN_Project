@@ -8,6 +8,7 @@ import {StyledText} from '../shared/StyledText';
 import {AddMemoProps} from '../../navigation/MemoStackNavigator';
 import firestore from '@react-native-firebase/firestore';
 import {useFocusEffect} from '@react-navigation/native';
+import analytics from '@react-native-firebase/analytics';
 
 const MemoContainer = styled.SafeAreaView`
   flex: 1;
@@ -40,6 +41,12 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
 
   const editMemo = async () => {
     await memosRef.doc(id).update({timestamp: new Date().toISOString(), text});
+  };
+
+  const logging = async () => {
+    await analytics().logEvent('memo', {
+      id: username,
+    });
   };
 
   return (
@@ -89,7 +96,10 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
             autoCorrect={false}
             autoCapitalize="none"
             value={text}
-            onChangeText={setText}
+            onChangeText={text => {
+              logging();
+              setText(text);
+            }}
           />
         </View>
       </ScrollView>
