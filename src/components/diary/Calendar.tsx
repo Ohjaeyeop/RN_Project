@@ -1,14 +1,19 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import styled from 'styled-components/native';
-import {color, Theme} from '../theme/color';
-import DateUtil from '../utils/DateUtil';
+import {color, Theme} from '../../theme/color';
+import DateUtil from '../../utils/DateUtil';
 import {ActivityIndicator, Platform, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {useUser} from '../providers/UserProvider';
+import {useUser} from '../../providers/UserProvider';
 import {useFocusEffect} from '@react-navigation/native';
-import {StyledText} from './shared/StyledText';
-import {getStudyInfoByPeriod, selectUpdateState} from '../redux/studyInfoSlice';
-import {useAppSelector} from '../hooks/useReduxFunction';
+import {StyledText} from '../shared/StyledText';
+import {
+  getStudyInfoByPeriod,
+  getUserRef,
+  selectUpdateState,
+} from '../../redux/studyInfoSlice';
+import {useAppSelector} from '../../hooks/useReduxFunction';
+import firestore from '@react-native-firebase/firestore';
 
 const CalendarView = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.background};
@@ -73,7 +78,13 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
   const [displayedDates, setDisplayedDates] = useState<number[]>([]);
   const [studiedDates, setStudiedDates] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
-  const updateState = useAppSelector(selectUpdateState);
+  const studyInfoRef = useMemo(() => {
+    if (user) {
+      return getUserRef(user.username).then(querySnapshot =>
+        querySnapshot.docs[0].ref.collection('StudyInfo'),
+      );
+    }
+  }, [user]);
 
   const getStudyInfosByMonth = useCallback(
     async (date: number) => {
@@ -119,13 +130,23 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
     [getCalendarInfo, getStudyInfosByMonth],
   );
 
+  useEffect(() => {
+    const subscriber = studyInfoRef?.then(ref =>
+      ref.onSnapshot(snapshot => {
+        let dates: number[] = [];
+        snapshot.docs.map(doc => {
+          dates.push(doc.data().date);
+        });
+        setStudiedDates(dates);
+      }),
+    );
+  }, [studyInfoRef]);
+
   useFocusEffect(
     useCallback(() => {
       setLastDate(today);
-      if (updateState === 'succeeded') {
-        changeCalendar(today);
-      }
-    }, [changeCalendar, updateState, today]),
+      getCalendarInfo(today);
+    }, [getCalendarInfo, today]),
   );
 
   const changeToPrevMonth = () => {

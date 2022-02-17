@@ -11,7 +11,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useUser} from '../../providers/UserProvider';
 import firestore from '@react-native-firebase/firestore';
 import Button from '../shared/Button';
-import Todo from '../Todo';
+import Todo from '../todo/Todo';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
 import TodoModal, {TodoModalRef} from '../shared/TodoModal';

@@ -1,17 +1,17 @@
 import React, {useCallback} from 'react';
 import {ActivityIndicator, Text, View} from 'react-native';
-import {useUser} from '../providers/UserProvider';
-import {useAppDispatch, useAppSelector} from '../hooks/useReduxFunction';
+import {useUser} from '../../providers/UserProvider';
+import {useAppDispatch, useAppSelector} from '../../hooks/useReduxFunction';
 import {
   getStudyInfo,
   selectStudyInfo,
   selectUpdateState,
-} from '../redux/studyInfoSlice';
-import {subjectColors, subjects} from '../data/study';
-import getDisplayedTime from '../utils/getDisplayedTime';
-import {color, Theme} from '../theme/color';
+} from '../../redux/studyInfoSlice';
+import {subjectColors, subjects} from '../../data/study';
+import getDisplayedTime from '../../utils/getDisplayedTime';
+import {color, Theme} from '../../theme/color';
 import {useFocusEffect} from '@react-navigation/native';
-import {StyledText} from './shared/StyledText';
+import {StyledText} from '../shared/StyledText';
 import styled from 'styled-components/native';
 
 const GraphBySubject = ({date}: {date: number}) => {

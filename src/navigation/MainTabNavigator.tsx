@@ -9,6 +9,7 @@ import Memo from '../components/screen/Memo';
 import {View} from 'react-native';
 import {color, Theme} from '../theme/color';
 import styled from 'styled-components/native';
+import MemoStackNavigator from './MemoStackNavigator';
 
 type TabParamList = {
   Diary: undefined;
@@ -78,7 +79,7 @@ const MainTabNavigator = () => {
         />
         <Tab.Screen
           name="Memo"
-          component={Memo}
+          component={MemoStackNavigator}
           options={{
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'메모'} />

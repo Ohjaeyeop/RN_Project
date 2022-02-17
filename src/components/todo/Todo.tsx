@@ -1,9 +1,9 @@
 import React from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
-import {TodoObj} from './screen/Todos';
-import {color} from '../theme/color';
+import {TodoObj} from '../screen/Todos';
+import {color} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {StyledText} from './shared/StyledText';
+import {StyledText} from '../shared/StyledText';
 
 type Props = {
   toggleComplete: (id: string, complete: boolean) => Promise<void>;

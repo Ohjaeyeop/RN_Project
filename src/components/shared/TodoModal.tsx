@@ -1,7 +1,9 @@
 import React, {useImperativeHandle, useRef} from 'react';
 import {
+  Easing,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   useWindowDimensions,
   View,
 } from 'react-native';
@@ -82,30 +84,32 @@ const TodoModal = React.forwardRef<
       coverScreen={true}
       backdropOpacity={0.5}
       style={{height: height * 0.3}}
+      animationDuration={200}
       ref={modalRef}>
       <View style={{paddingHorizontal: safeArea.left}}>
-        <StyledText
-          style={{
-            fontWeight: '700',
-            marginBottom: 16,
-          }}>
-          TODO에 할 일을 추가합니다.
-        </StyledText>
-        <TodoTitleInput
-          autoCapitalize="none"
-          placeholder="제목을 적어주세요"
-          value={title}
-          autoFocus={true}
-          onChangeText={setTitle}
-          autoCorrect={false}
-        />
-        <TodoBodyInput
-          autoCapitalize="none"
-          placeholder="할 일을 적어주세요"
-          value={body}
-          onChangeText={setBody}
-          autoCorrect={false}
-        />
+        <ScrollView>
+          <StyledText
+            style={{
+              fontWeight: '700',
+              marginBottom: 16,
+            }}>
+            TODO에 할 일을 추가합니다.
+          </StyledText>
+          <TodoTitleInput
+            autoCapitalize="none"
+            placeholder="제목을 적어주세요"
+            value={title}
+            onChangeText={setTitle}
+            autoCorrect={false}
+          />
+          <TodoBodyInput
+            autoCapitalize="none"
+            placeholder="할 일을 적어주세요"
+            value={body}
+            onChangeText={setBody}
+            autoCorrect={false}
+          />
+        </ScrollView>
         {props.children}
       </View>
     </StyledModal>

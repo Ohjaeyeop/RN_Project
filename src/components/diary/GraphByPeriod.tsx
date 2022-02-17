@@ -6,13 +6,13 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import {useUser} from '../providers/UserProvider';
-import DateUtil from '../utils/DateUtil';
-import {color, Theme} from '../theme/color';
+import {useUser} from '../../providers/UserProvider';
+import DateUtil from '../../utils/DateUtil';
+import {color, Theme} from '../../theme/color';
 import Graph from './Graph';
 import {useFocusEffect} from '@react-navigation/native';
 import styled from 'styled-components/native';
-import {getStudyInfoByPeriod} from '../redux/studyInfoSlice';
+import {getStudyInfoByPeriod} from '../../redux/studyInfoSlice';
 
 const SelectBox = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.box2};
