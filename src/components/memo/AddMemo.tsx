@@ -23,7 +23,7 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
   const [text, setText] = useState('');
 
   const addMemo = async () => {
-    await memosRef.add({timestamp: new Date().toISOString(), text});
+    text && (await memosRef.add({timestamp: new Date().toISOString(), text}));
   };
 
   const editMemo = async () => {
