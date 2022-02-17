@@ -62,7 +62,7 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
               alignItems: 'center',
             }}
             onPress={() => {
-              addMemo();
+              id ? editMemo() : addMemo();
               navigation.pop();
             }}>
             <Icon name={'md-arrow-back-sharp'} size={20} />
