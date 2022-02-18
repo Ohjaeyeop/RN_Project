@@ -101,6 +101,7 @@ const TodoModal = React.forwardRef<
             value={title}
             onChangeText={setTitle}
             autoCorrect={false}
+            autoFocus={true}
           />
           <TodoBodyInput
             autoCapitalize="none"

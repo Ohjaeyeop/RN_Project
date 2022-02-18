@@ -121,7 +121,6 @@ export const studyInfoSlice = createSlice({
       state.updateState = 'loading';
     });
     builder.addCase(updateStudyInfo.fulfilled, state => {
-      console.log(2);
       state.updateState = 'succeeded';
     });
   },

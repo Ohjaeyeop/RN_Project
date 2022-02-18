@@ -3,18 +3,18 @@ import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
 import {color, Theme} from '../../theme/color';
 import {
-  ScrollView,
   TouchableOpacity,
   Text,
   View,
-  StyleSheet,
   Pressable,
+  useWindowDimensions,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../../providers/UserProvider';
 import {MemoListProps} from '../../navigation/MemoStackNavigator';
 import {SwipeListView} from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/AntDesign';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const MemoContainer = styled.SafeAreaView`
   flex: 1;
@@ -29,6 +29,8 @@ type MemoObj = {
 
 const Memo = ({navigation}: MemoListProps) => {
   const {user} = useUser();
+  const safeArea = useSafeAreaInsets();
+  const width = useWindowDimensions().width;
   const memosRef = useMemo(
     () =>
       firestore().collection('Memo').doc(user?.username).collection('memos'),
@@ -103,7 +105,7 @@ const Memo = ({navigation}: MemoListProps) => {
               <Text style={{color: color.gray, marginRight: 8}}>
                 {item.timestamp.slice(0, 10).split('-').join('.')}.
               </Text>
-              <Text style={{color: color.gray}}>
+              <Text style={{color: color.gray}} numberOfLines={1}>
                 {item.text.split('\n')[1]
                   ? item.text.split('\n')[1]
                   : '추가 텍스트 없음'}

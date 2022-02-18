@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
 import styled from 'styled-components/native';
-import {Theme} from '../../theme/color';
+import {color, Theme} from '../../theme/color';
 import ScreenHeader from '../shared/ScreenHeader';
 import {View, TouchableOpacity, TextInput, ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -46,6 +46,7 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
   const logging = async () => {
     await analytics().logEvent('memo', {
       id: username,
+      date: new Date().toISOString(),
     });
   };
 
@@ -72,7 +73,7 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
               id ? editMemo() : addMemo();
               navigation.pop();
             }}>
-            <Icon name={'md-arrow-back-sharp'} size={20} />
+            <Icon name={'md-arrow-back-sharp'} size={20} color={color.dark} />
           </TouchableOpacity>
           <TouchableOpacity
             style={{
@@ -91,7 +92,7 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
           <TextInput
             ref={textInputRef}
             autoFocus={true}
-            style={{fontSize: 16, fontWeight: '700'}}
+            style={{fontSize: 16, fontWeight: '700', color: color.dark}}
             multiline={true}
             autoCorrect={false}
             autoCapitalize="none"

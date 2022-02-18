@@ -20,12 +20,13 @@ export default function setIntervalWithTimeout(
 ): TimeoutHandler {
   let cleared = false;
   let prev = Date.now();
-  let expected = prev + intervalMs;
+  let expected = Date.now();
 
   const timeout = () => {
     const now = Date.now();
     const sec = Math.max(1, Math.round((now - prev) / 1000));
-    const delta = Math.max(0, now - expected);
+    const delta = Math.max(0, Date.now() - expected);
+
     expected += intervalMs;
     prev = now;
     handleWrapper.handler = setTimeout(() => {

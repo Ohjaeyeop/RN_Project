@@ -1,6 +1,7 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
+  AppState,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -79,7 +80,7 @@ const StudyTimer = () => {
       sec => {
         dispatch(increment({subject, sec}));
       },
-      999,
+      1000,
       handler,
     );
   };
@@ -90,7 +91,6 @@ const StudyTimer = () => {
       setOffset(0);
       user && dispatch(getStudyInfo({username: user.username, date: today}));
       dispatch(setIdle());
-      console.log(1);
     }, [dispatch, today, user]),
   );
 
@@ -103,6 +103,19 @@ const StudyTimer = () => {
       };
     }, [handler, stopStudy]),
   );
+
+  useEffect(() => {
+    const subscriber = AppState.addEventListener('change', state => {
+      if (state === 'background') {
+        stopStudy();
+        updateInfo();
+        handler.clear();
+      }
+    });
+    return () => {
+      subscriber.remove();
+    };
+  }, [handler, stopStudy]);
 
   const changeDate = (change: number) => {
     if (selectedDate === today) {
