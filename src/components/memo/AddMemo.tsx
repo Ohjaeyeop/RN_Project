@@ -15,13 +15,21 @@ const MemoContainer = styled.SafeAreaView`
   background-color: ${({theme}: {theme: Theme}) => theme.background};
 `;
 
+const StyledTextInput = styled.TextInput`
+  color: ${({theme}: {theme: Theme}) => theme.text};
+`;
+
+const StyledIcon = styled(Icon)`
+  color: ${({theme}: {theme: Theme}) => theme.text};
+`;
+
 const AddMemo = ({route, navigation}: AddMemoProps) => {
   const {username, id} = route.params;
   const memosRef = useMemo(
     () => firestore().collection('Memo').doc(username).collection('memos'),
     [username],
   );
-  const textInputRef = useRef<TextInput>(null);
+  const textInputRef = useRef<TextInput | null>(null);
   const [text, setText] = useState('');
 
   useFocusEffect(
@@ -73,7 +81,7 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
               id ? editMemo() : addMemo();
               navigation.pop();
             }}>
-            <Icon name={'md-arrow-back-sharp'} size={20} color={color.dark} />
+            <StyledIcon name={'md-arrow-back-sharp'} size={20} />
           </TouchableOpacity>
           <TouchableOpacity
             style={{
@@ -89,10 +97,10 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
       </ScreenHeader>
       <ScrollView style={{flex: 1, paddingHorizontal: 20}}>
         <View style={{flex: 1}}>
-          <TextInput
-            ref={textInputRef}
+          <StyledTextInput
+            ref={ref => (textInputRef.current = ref)}
             autoFocus={true}
-            style={{fontSize: 16, fontWeight: '700', color: color.dark}}
+            style={{fontSize: 16, fontWeight: '700'}}
             multiline={true}
             autoCorrect={false}
             autoCapitalize="none"

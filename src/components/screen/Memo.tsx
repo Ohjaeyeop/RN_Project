@@ -9,6 +9,7 @@ import {MemoListProps} from '../../navigation/MemoStackNavigator';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {RectButton, Swipeable} from 'react-native-gesture-handler';
 import {useFocusEffect} from '@react-navigation/native';
+import {StyledText} from '../shared/StyledText';
 
 const MemoContainer = styled.SafeAreaView`
   flex: 1;
@@ -145,15 +146,15 @@ const Memo = ({navigation}: MemoListProps) => {
                   });
                 }
               }}>
-              <Text
+              <StyledText
                 style={{
                   fontSize: 16,
                   fontWeight: '700',
-                  color: color.dark,
+                  marginBottom: 1,
                 }}
                 numberOfLines={1}>
                 {item.text.split('\n')[0]}
-              </Text>
+              </StyledText>
               <View style={{flexDirection: 'row'}}>
                 <Text style={{color: color.gray, marginRight: 8}}>
                   {item.timestamp.slice(0, 10).split('-').join('.')}.
