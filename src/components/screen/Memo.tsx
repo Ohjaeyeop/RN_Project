@@ -1,20 +1,14 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
 import {color, Theme} from '../../theme/color';
-import {
-  TouchableOpacity,
-  Text,
-  View,
-  Pressable,
-  useWindowDimensions,
-} from 'react-native';
+import {Animated, TouchableOpacity, Text, View, FlatList} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../../providers/UserProvider';
 import {MemoListProps} from '../../navigation/MemoStackNavigator';
-import {SwipeListView} from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/AntDesign';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {RectButton, Swipeable} from 'react-native-gesture-handler';
+import {useFocusEffect} from '@react-navigation/native';
 
 const MemoContainer = styled.SafeAreaView`
   flex: 1;
@@ -29,14 +23,14 @@ type MemoObj = {
 
 const Memo = ({navigation}: MemoListProps) => {
   const {user} = useUser();
-  const safeArea = useSafeAreaInsets();
-  const width = useWindowDimensions().width;
   const memosRef = useMemo(
     () =>
       firestore().collection('Memo').doc(user?.username).collection('memos'),
     [user?.username],
   );
   const [memos, setMemos] = useState<MemoObj[]>([]);
+  const swipeableRefs: (Swipeable | null)[] = useMemo(() => [], []);
+  const opened = useRef<Swipeable | null>(null);
 
   const deleteMemo = async (id: string) => {
     await memosRef.doc(id).delete();
@@ -55,6 +49,52 @@ const Memo = ({navigation}: MemoListProps) => {
     return () => subscriber();
   }, [memosRef]);
 
+  const closeSwipeable = useCallback(
+    (index: number) => {
+      if (opened.current && opened.current !== swipeableRefs[index]) {
+        opened.current?.close();
+      }
+      opened.current = swipeableRefs[index];
+    },
+    [swipeableRefs],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => closeSwipeable(-1);
+    }, [closeSwipeable]),
+  );
+
+  const renderRightActions = (
+    progress: Animated.AnimatedInterpolation,
+    id: string,
+  ) => {
+    const trans = progress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [70, 0],
+    });
+
+    return (
+      <Animated.View
+        style={{
+          backgroundColor: color.red,
+          transform: [{translateX: trans}],
+        }}>
+        <RectButton
+          style={{
+            backgroundColor: color.red,
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: 70,
+            height: '100%',
+          }}
+          onPress={() => deleteMemo(id)}>
+          <Icon name={'delete'} size={25} color={'white'} />
+        </RectButton>
+      </Animated.View>
+    );
+  };
+
   return (
     <MemoContainer>
       <ScreenHeader title={'메모'}>
@@ -72,63 +112,61 @@ const Memo = ({navigation}: MemoListProps) => {
           </TouchableOpacity>
         </TouchableOpacity>
       </ScreenHeader>
-      <SwipeListView
+      <FlatList
         data={memos}
         keyExtractor={memo => memo.timestamp}
-        renderItem={({item}) => (
-          <Pressable
-            key={item.timestamp}
-            style={{
-              paddingHorizontal: 20,
-              borderBottomWidth: 1,
-              borderColor: color.lightGray,
-              paddingTop: 16,
-              paddingBottom: 8,
-              backgroundColor: 'white',
-            }}
-            onPress={() =>
-              navigation.navigate('AddMemo', {
-                id: item.id,
-                username: user?.username,
-              })
+        renderItem={({item, index}) => (
+          <Swipeable
+            friction={3}
+            overshootRight={false}
+            ref={ref => (swipeableRefs[index] = ref)}
+            onSwipeableWillOpen={() => closeSwipeable(index)}
+            renderRightActions={progress =>
+              renderRightActions(progress, item.id)
             }>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: '700',
-                color: color.dark,
-              }}
-              numberOfLines={1}>
-              {item.text.split('\n')[0]}
-            </Text>
-            <View style={{flexDirection: 'row'}}>
-              <Text style={{color: color.gray, marginRight: 8}}>
-                {item.timestamp.slice(0, 10).split('-').join('.')}.
+            <RectButton
+              style={[
+                {
+                  paddingHorizontal: 20,
+                  borderBottomWidth: 1,
+                  borderColor: color.lightGray,
+                  paddingTop: 16,
+                  paddingBottom: 8,
+                },
+              ]}
+              onPress={() => {
+                if (opened.current) {
+                  opened.current?.close();
+                  opened.current = null;
+                } else {
+                  navigation.navigate('AddMemo', {
+                    id: item.id,
+                    username: user?.username,
+                  });
+                }
+              }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: '700',
+                  color: color.dark,
+                }}
+                numberOfLines={1}>
+                {item.text.split('\n')[0]}
               </Text>
-              <Text style={{color: color.gray}} numberOfLines={1}>
-                {item.text.split('\n')[1]
-                  ? item.text.split('\n')[1]
-                  : '추가 텍스트 없음'}
-              </Text>
-            </View>
-          </Pressable>
+              <View style={{flexDirection: 'row'}}>
+                <Text style={{color: color.gray, marginRight: 8}}>
+                  {item.timestamp.slice(0, 10).split('-').join('.')}.
+                </Text>
+                <Text style={{color: color.gray}} numberOfLines={1}>
+                  {item.text.split('\n')[1]
+                    ? item.text.split('\n')[1]
+                    : '추가 텍스트 없음'}
+                </Text>
+              </View>
+            </RectButton>
+          </Swipeable>
         )}
-        renderHiddenItem={({item}) => (
-          <TouchableOpacity
-            style={{
-              position: 'absolute',
-              right: 0,
-              backgroundColor: color.red,
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: 70,
-              height: '100%',
-            }}
-            onPress={() => deleteMemo(item.id)}>
-            <Icon name={'delete'} size={25} color={'white'} />
-          </TouchableOpacity>
-        )}
-        rightOpenValue={-70}
       />
     </MemoContainer>
   );

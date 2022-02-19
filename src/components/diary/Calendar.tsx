@@ -40,7 +40,7 @@ const Mark = styled.View`
   border-radius: 3px;
   background-color: ${color.primary};
   position: absolute;
-  top: 1px;
+  top: 2px;
 `;
 
 const Days = styled.Text`
@@ -212,13 +212,15 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
                   return (
                     <TextBox
                       key={index + 7}
-                      style={
-                        displayedDates[index] === selectedDate && {
-                          borderRadius: 20,
-                          borderWidth: 2,
-                          borderColor: color.subPrimary,
-                        }
-                      }
+                      style={[
+                        {borderWidth: 2, borderRadius: 20},
+                        {
+                          borderColor:
+                            displayedDates[index] === selectedDate
+                              ? color.subPrimary
+                              : 'white',
+                        },
+                      ]}
                       onPress={
                         index >= firstDay.current &&
                         index < displayedDates.length
