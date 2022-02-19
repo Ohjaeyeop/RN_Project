@@ -5,7 +5,6 @@ import {
   View,
   Pressable,
   FlatList,
-  useWindowDimensions,
 } from 'react-native';
 import {color, Theme} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialIcons';
