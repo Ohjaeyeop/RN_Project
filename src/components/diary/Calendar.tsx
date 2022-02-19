@@ -27,11 +27,18 @@ const RowBox = styled.View`
   justify-content: space-between;
 `;
 
-const TextBox = styled.Pressable`
+type TextBoxProps = {
+  isSelected: boolean;
+  theme: Theme;
+};
+
+const TextBox = styled.Pressable<TextBoxProps>`
   width: 40px;
   height: 40px;
   align-items: center;
   justify-content: center;
+  border-color: ${props =>
+    props.isSelected ? color.subPrimary : props.theme.background};
 `;
 
 const Mark = styled.View`
@@ -188,7 +195,7 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
       </View>
       <RowBox>
         {days.map(day => (
-          <TextBox key={day}>
+          <TextBox isSelected={false} key={day}>
             <Days>{day}</Days>
           </TextBox>
         ))}
@@ -212,15 +219,8 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
                   return (
                     <TextBox
                       key={index + 7}
-                      style={[
-                        {borderWidth: 2, borderRadius: 20},
-                        {
-                          borderColor:
-                            displayedDates[index] === selectedDate
-                              ? color.subPrimary
-                              : 'white',
-                        },
-                      ]}
+                      isSelected={displayedDates[index] === selectedDate}
+                      style={{borderWidth: 2, borderRadius: 20}}
                       onPress={
                         index >= firstDay.current &&
                         index < displayedDates.length
