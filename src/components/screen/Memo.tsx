@@ -117,7 +117,7 @@ const Memo = ({navigation}: MemoListProps) => {
         keyExtractor={memo => memo.timestamp}
         renderItem={({item, index}) => (
           <Swipeable
-            friction={3}
+            friction={2}
             overshootRight={false}
             ref={ref => (swipeableRefs[index] = ref)}
             onSwipeableWillOpen={() => closeSwipeable(index)}

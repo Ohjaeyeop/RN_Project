@@ -1,27 +1,19 @@
-import React, {useImperativeHandle, useRef} from 'react';
-import {
-  Easing,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import React from 'react';
+import {ScrollView, useWindowDimensions, Pressable} from 'react-native';
 import styled from 'styled-components/native';
 import {color, Theme} from '../../theme/color';
-import Modal from 'react-native-modalbox';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import Modal from 'react-native-modal';
 
 const StyledText = styled.Text`
   color: ${({theme}: {theme: Theme}) => theme.text};
   font-size: 16px;
 `;
 
-const StyledModal = styled(Modal)`
+const ModalView = styled(Pressable)`
   background-color: ${({theme}: {theme: Theme}) => theme.background};
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  padding: 20px 24px;
 `;
 
 const TodoTitleInput = styled.TextInput.attrs(({theme}: {theme: Theme}) => ({
@@ -51,42 +43,42 @@ type Props = {
   body: string;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
   setBody: React.Dispatch<React.SetStateAction<string>>;
-};
-
-export type TodoModalRef = {
-  openModal: () => void;
+  visible: boolean;
+  children: JSX.Element;
   closeModal: () => void;
 };
 
-const TodoModal = React.forwardRef<
-  TodoModalRef,
-  React.PropsWithChildren<Props>
->((props, ref) => {
-  const height = useWindowDimensions().height;
+const TodoModal = ({
+  title,
+  body,
+  setTitle,
+  setBody,
+  visible,
+  closeModal,
+  children,
+}: Props) => {
+  const {width, height} = useWindowDimensions();
   const safeArea = useSafeAreaInsets();
-  const {title, body, setTitle, setBody} = props;
-  const modalRef = useRef<Modal>(null);
-
-  useImperativeHandle(ref, () => ({
-    openModal: () => {
-      modalRef.current?.open();
-    },
-    closeModal: () => {
-      modalRef.current?.close();
-    },
-  }));
 
   return (
-    <StyledModal
-      entry="bottom"
-      position="bottom"
-      swipeToClose={false}
-      coverScreen={true}
-      backdropOpacity={0.5}
-      style={{height: height * 0.3}}
-      animationDuration={200}
-      ref={modalRef}>
-      <View style={{paddingHorizontal: safeArea.left}}>
+    <Modal
+      animationIn="slideInUp"
+      isVisible={visible}
+      backdropColor="rgba(33, 37, 41, 0.5)"
+      onBackButtonPress={() => closeModal()}
+      onBackdropPress={() => closeModal()}
+      avoidKeyboard={true}
+      swipeDirection="down"
+      onSwipeComplete={() => closeModal()}
+      supportedOrientations={['portrait', 'landscape']}
+      useNativeDriver={true}
+      style={{alignItems: 'center', justifyContent: 'flex-end', margin: 0}}>
+      <ModalView
+        style={{
+          width: width,
+          paddingHorizontal: 20 + safeArea.left,
+          paddingVertical: 24,
+        }}>
         <ScrollView>
           <StyledText
             style={{
@@ -111,10 +103,10 @@ const TodoModal = React.forwardRef<
             autoCorrect={false}
           />
         </ScrollView>
-        {props.children}
-      </View>
-    </StyledModal>
+        {children}
+      </ModalView>
+    </Modal>
   );
-});
+};
 
 export default TodoModal;
