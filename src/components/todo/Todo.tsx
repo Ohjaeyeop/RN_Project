@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
 import {TodoObj} from '../screen/Todos';
 import {color, Theme} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';

@@ -1,5 +1,10 @@
-import React from 'react';
-import {ScrollView, useWindowDimensions, Pressable} from 'react-native';
+import React, {useRef} from 'react';
+import {
+  ScrollView,
+  useWindowDimensions,
+  Pressable,
+  TextInput,
+} from 'react-native';
 import styled from 'styled-components/native';
 import {color, Theme} from '../../theme/color';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -59,10 +64,12 @@ const TodoModal = ({
 }: Props) => {
   const {width, height} = useWindowDimensions();
   const safeArea = useSafeAreaInsets();
+  const inputRef = useRef<TextInput | null>(null);
 
   return (
     <Modal
       animationIn="slideInUp"
+      animationInTiming={100}
       isVisible={visible}
       backdropColor="rgba(33, 37, 41, 0.5)"
       onBackButtonPress={() => closeModal()}
@@ -72,12 +79,18 @@ const TodoModal = ({
       onSwipeComplete={() => closeModal()}
       supportedOrientations={['portrait', 'landscape']}
       useNativeDriver={true}
+      onModalShow={() => {
+        inputRef.current?.focus();
+      }}
+      onModalWillHide={() => {
+        inputRef.current?.blur();
+      }}
       style={{alignItems: 'center', justifyContent: 'flex-end', margin: 0}}>
       <ModalView
         style={{
           width: width,
           paddingHorizontal: 20 + safeArea.left,
-          paddingVertical: 24,
+          paddingTop: 24,
         }}>
         <ScrollView>
           <StyledText
@@ -88,12 +101,12 @@ const TodoModal = ({
             TODO에 할 일을 추가합니다.
           </StyledText>
           <TodoTitleInput
+            ref={ref => (inputRef.current = ref)}
             autoCapitalize="none"
             placeholder="제목을 적어주세요"
             value={title}
             onChangeText={setTitle}
             autoCorrect={false}
-            autoFocus={true}
           />
           <TodoBodyInput
             autoCapitalize="none"
@@ -101,6 +114,7 @@ const TodoModal = ({
             value={body}
             onChangeText={setBody}
             autoCorrect={false}
+            multiline={true}
           />
         </ScrollView>
         {children}

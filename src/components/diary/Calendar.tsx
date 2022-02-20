@@ -79,7 +79,7 @@ type Props = {
 const Calendar = ({today, selectedDate, selectDate}: Props) => {
   const {user} = useUser();
   const [lastDate, setLastDate] = useState<number>(today);
-  const firstDay = useRef(0);
+  const firstDay = useRef(DateUtil.getFirstDay(today));
   const [displayedDates, setDisplayedDates] = useState<number[]>([]);
   const [studiedDates, setStudiedDates] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
