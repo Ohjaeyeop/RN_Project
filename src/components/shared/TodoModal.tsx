@@ -1,19 +1,24 @@
-import React, {useImperativeHandle, useRef} from 'react';
-import {useWindowDimensions, View} from 'react-native';
+import React, {useRef} from 'react';
+import {
+  ScrollView,
+  useWindowDimensions,
+  Pressable,
+  TextInput,
+} from 'react-native';
 import styled from 'styled-components/native';
 import {color, Theme} from '../../theme/color';
-import Modal from 'react-native-modalbox';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import Modal from 'react-native-modal';
 
 const StyledText = styled.Text`
   color: ${({theme}: {theme: Theme}) => theme.text};
   font-size: 16px;
 `;
 
-const StyledModal = styled(Modal)`
-  background-color: ${({theme}: {theme: Theme}) => theme.background};
-  border-radius: 10px;
-  padding: 20px 24px;
+const ModalView = styled(Pressable)`
+  background-color: ${({theme}: {theme: Theme}) => theme.modal};
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 `;
 
 const TodoTitleInput = styled.TextInput.attrs(({theme}: {theme: Theme}) => ({
@@ -43,65 +48,79 @@ type Props = {
   body: string;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
   setBody: React.Dispatch<React.SetStateAction<string>>;
-};
-
-export type TodoModalRef = {
-  openModal: () => void;
+  visible: boolean;
+  children: JSX.Element;
   closeModal: () => void;
 };
 
-const TodoModal = React.forwardRef<
-  TodoModalRef,
-  React.PropsWithChildren<Props>
->((props, ref) => {
-  const width = useWindowDimensions().width;
-  const height = useWindowDimensions().height;
+const TodoModal = ({
+  title,
+  body,
+  setTitle,
+  setBody,
+  visible,
+  closeModal,
+  children,
+}: Props) => {
+  const {width, height} = useWindowDimensions();
   const safeArea = useSafeAreaInsets();
-  const {title, body, setTitle, setBody} = props;
-  const modalRef = useRef<Modal>(null);
-
-  useImperativeHandle(ref, () => ({
-    openModal: () => {
-      modalRef.current?.open();
-    },
-    closeModal: () => {
-      modalRef.current?.close();
-    },
-  }));
+  const inputRef = useRef<TextInput | null>(null);
 
   return (
-    <StyledModal
-      entry="bottom"
-      position="bottom"
-      swipeToClose={false}
-      coverScreen={true}
-      backdropOpacity={0.5}
-      style={{height: height * 0.6}}
-      ref={modalRef}>
-      <View style={{paddingHorizontal: safeArea.left}}>
-        <StyledText
-          style={{
-            fontWeight: '700',
-            marginBottom: 16,
-          }}>
-          TODO에 할 일을 추가합니다.
-        </StyledText>
-        <TodoTitleInput
-          autoCapitalize="none"
-          placeholder="제목을 적어주세요"
-          value={title}
-          onChangeText={setTitle}
-        />
-        <TodoBodyInput
-          autoCapitalize="none"
-          placeholder="할 일을 적어주세요"
-          value={body}
-          onChangeText={setBody}
-        />
-        {props.children}
-      </View>
-    </StyledModal>
+    <Modal
+      animationIn="slideInUp"
+      animationInTiming={100}
+      isVisible={visible}
+      backdropColor="rgba(33, 37, 41, 0.5)"
+      onBackButtonPress={() => closeModal()}
+      onBackdropPress={() => closeModal()}
+      avoidKeyboard={true}
+      swipeDirection="down"
+      onSwipeComplete={() => closeModal()}
+      supportedOrientations={['portrait', 'landscape']}
+      useNativeDriver={true}
+      onModalShow={() => {
+        inputRef.current?.focus();
+      }}
+      onModalWillHide={() => {
+        inputRef.current?.blur();
+      }}
+      style={{alignItems: 'center', justifyContent: 'flex-end', margin: 0}}>
+      <ModalView
+        style={{
+          width: width,
+          paddingHorizontal: 20 + safeArea.left,
+          paddingTop: 24,
+        }}>
+        <ScrollView>
+          <StyledText
+            style={{
+              fontWeight: '700',
+              marginBottom: 16,
+            }}>
+            TODO에 할 일을 추가합니다.
+          </StyledText>
+          <TodoTitleInput
+            ref={ref => (inputRef.current = ref)}
+            autoCapitalize="none"
+            placeholder="제목을 적어주세요"
+            value={title}
+            onChangeText={setTitle}
+            autoCorrect={false}
+          />
+          <TodoBodyInput
+            autoCapitalize="none"
+            placeholder="할 일을 적어주세요"
+            value={body}
+            onChangeText={setBody}
+            autoCorrect={false}
+            multiline={true}
+          />
+          {children}
+        </ScrollView>
+      </ModalView>
+    </Modal>
   );
-});
+};
 
 export default TodoModal;

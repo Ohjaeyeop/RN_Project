@@ -2,11 +2,11 @@ import React, {useCallback, useState} from 'react';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
 import {Theme} from '../../theme/color';
-import Calendar from '../Calendar';
+import Calendar from '../diary/Calendar';
 import {View, useWindowDimensions} from 'react-native';
 import DateUtil from '../../utils/DateUtil';
-import GraphBySubject from '../GraphBySubject';
-import GraphByPeriod from '../GraphByPeriod';
+import GraphBySubject from '../diary/GraphBySubject';
+import GraphByPeriod from '../diary/GraphByPeriod';
 import {useFocusEffect} from '@react-navigation/native';
 
 const DiarayContainer = styled.SafeAreaView`

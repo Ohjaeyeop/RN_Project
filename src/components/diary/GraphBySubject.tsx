@@ -1,24 +1,31 @@
 import React, {useCallback} from 'react';
 import {ActivityIndicator, Text, View} from 'react-native';
-import {useUser} from '../providers/UserProvider';
-import {useAppDispatch, useAppSelector} from '../hooks/useReduxFunction';
-import {getStudyInfo, selectStudyInfo} from '../redux/studyInfoSlice';
-import {subjectColors, subjects} from '../data/study';
-import getDisplayedTime from '../utils/getDisplayedTime';
-import {color, Theme} from '../theme/color';
+import {useUser} from '../../providers/UserProvider';
+import {useAppDispatch, useAppSelector} from '../../hooks/useReduxFunction';
+import {
+  getStudyInfo,
+  selectStudyInfo,
+  selectUpdateState,
+} from '../../redux/studyInfoSlice';
+import {subjectColors, subjects} from '../../data/study';
+import getDisplayedTime from '../../utils/getDisplayedTime';
+import {color, Theme} from '../../theme/color';
 import {useFocusEffect} from '@react-navigation/native';
-import {StyledText} from './shared/StyledText';
+import {StyledText} from '../shared/StyledText';
 import styled from 'styled-components/native';
 
 const GraphBySubject = ({date}: {date: number}) => {
   const {user} = useUser();
   const studyInfo = useAppSelector(selectStudyInfo);
   const dispatch = useAppDispatch();
+  const updateState = useAppSelector(selectUpdateState);
 
   useFocusEffect(
     useCallback(() => {
-      user && dispatch(getStudyInfo({username: user.username, date: date}));
-    }, [date, dispatch, user]),
+      user &&
+        updateState === 'succeeded' &&
+        dispatch(getStudyInfo({username: user.username, date: date}));
+    }, [date, dispatch, updateState, user]),
   );
 
   const SubText = styled.Text`

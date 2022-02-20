@@ -5,6 +5,7 @@ import {color, Theme} from '../../theme/color';
 import {View, Text, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useUser} from '../../providers/UserProvider';
+import {useAsyncStorage} from '@react-native-async-storage/async-storage';
 
 const SettingContainer = styled.SafeAreaView`
   flex: 1;
@@ -13,11 +14,19 @@ const SettingContainer = styled.SafeAreaView`
 
 const Setting = () => {
   const {setUser} = useUser();
+  const {removeItem} = useAsyncStorage('user');
+
+  const logOut = async () => {
+    setUser(undefined);
+    await removeItem();
+  };
 
   return (
     <SettingContainer>
       <ScreenHeader title={'설정'} />
-      <View style={{flex: 1, paddingHorizontal: 28}}>
+      <TouchableOpacity
+        style={{flex: 1, paddingHorizontal: 28}}
+        onPress={() => logOut()}>
         <View
           style={{
             flexDirection: 'row',
@@ -27,18 +36,11 @@ const Setting = () => {
           <Text style={{color: color.gray, fontWeight: '700', fontSize: 12}}>
             로그아웃
           </Text>
-          <TouchableOpacity
-            style={{
-              borderWidth: 1,
-              borderColor: color.gray,
-              borderStyle: 'dashed',
-              padding: 2,
-            }}
-            onPress={() => setUser(undefined)}>
+          <View style={{padding: 2}}>
             <Icon name={'md-arrow-forward'} size={20} color={color.gray} />
-          </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     </SettingContainer>
   );
 };

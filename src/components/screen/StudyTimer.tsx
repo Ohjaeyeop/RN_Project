@@ -1,7 +1,7 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
-  Platform,
+  AppState,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -18,6 +18,7 @@ import {
   getStudyInfo,
   increment,
   selectStudyInfo,
+  setIdle,
   updateStudyInfo,
 } from '../../redux/studyInfoSlice';
 import getDisplayedTime from '../../utils/getDisplayedTime';
@@ -48,6 +49,7 @@ const StudyTimer = () => {
   const callRef = useRef<() => void>();
   callRef.current = () => {
     user &&
+      selectedDate === today &&
       dispatch(
         updateStudyInfo({
           username: user.username,
@@ -78,14 +80,17 @@ const StudyTimer = () => {
       sec => {
         dispatch(increment({subject, sec}));
       },
-      999,
+      1000,
       handler,
     );
   };
 
   useFocusEffect(
     useCallback(() => {
+      setSelectedDate(today);
+      setOffset(0);
       user && dispatch(getStudyInfo({username: user.username, date: today}));
+      dispatch(setIdle());
     }, [dispatch, today, user]),
   );
 
@@ -98,6 +103,19 @@ const StudyTimer = () => {
       };
     }, [handler, stopStudy]),
   );
+
+  useEffect(() => {
+    const subscriber = AppState.addEventListener('change', state => {
+      if (state === 'background') {
+        stopStudy();
+        updateInfo();
+        handler.clear();
+      }
+    });
+    return () => {
+      subscriber.remove();
+    };
+  }, [handler, stopStudy]);
 
   const changeDate = (change: number) => {
     if (selectedDate === today) {

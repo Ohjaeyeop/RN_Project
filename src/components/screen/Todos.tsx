@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
@@ -11,10 +11,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useUser} from '../../providers/UserProvider';
 import firestore from '@react-native-firebase/firestore';
 import Button from '../shared/Button';
-import Todo from '../Todo';
+import Todo from '../todo/Todo';
 import ScreenHeader from '../shared/ScreenHeader';
 import styled from 'styled-components/native';
-import TodoModal, {TodoModalRef} from '../shared/TodoModal';
+import TodoModal from '../shared/TodoModal';
 import {StyledText} from '../shared/StyledText';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
@@ -45,8 +45,15 @@ const Todos = () => {
   const [displayedTodoType, setDisplayedTodoType] = useState<'TODO' | 'DONE'>(
     'TODO',
   );
-  const addTodoModalRef = useRef<TodoModalRef>(null);
-  const editTodoModalRef = useRef<TodoModalRef>(null);
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+
+  const closeAddModal = () => {
+    setAddModalVisible(false);
+  };
+  const closeEditModal = () => {
+    setEditModalVisible(false);
+  };
 
   const cleanTodo = () => {
     setTitle('');
@@ -76,7 +83,7 @@ const Todos = () => {
     setTitle(title);
     setBody(body);
     setId(id);
-    editTodoModalRef.current?.openModal();
+    setEditModalVisible(true);
   };
 
   useEffect(() => {
@@ -145,7 +152,7 @@ const Todos = () => {
         style={[styles.addButton, {right: 20 + safeArea.right}]}
         onPress={() => {
           cleanTodo();
-          addTodoModalRef.current?.openModal();
+          setAddModalVisible(true);
         }}>
         <Icon name="add" color={color.white} size={25} />
       </TouchableOpacity>
@@ -154,7 +161,8 @@ const Todos = () => {
         body={body}
         setTitle={setTitle}
         setBody={setBody}
-        ref={addTodoModalRef}>
+        visible={addModalVisible}
+        closeModal={closeAddModal}>
         <Button
           text="저장하기"
           backgroundColor={color.primary}
@@ -162,7 +170,7 @@ const Todos = () => {
           width="100%"
           onPress={() => {
             addTodo();
-            addTodoModalRef.current?.closeModal();
+            closeAddModal();
           }}
         />
       </TodoModal>
@@ -171,7 +179,8 @@ const Todos = () => {
         body={body}
         setTitle={setTitle}
         setBody={setBody}
-        ref={editTodoModalRef}>
+        visible={editModalVisible}
+        closeModal={closeEditModal}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Button
             text="삭제하기"
@@ -180,7 +189,7 @@ const Todos = () => {
             width="48%"
             onPress={() => {
               deleteTodo();
-              editTodoModalRef.current?.closeModal();
+              closeEditModal();
             }}
           />
           <Button
@@ -190,7 +199,7 @@ const Todos = () => {
             width="48%"
             onPress={() => {
               editTodo();
-              editTodoModalRef.current?.closeModal();
+              closeEditModal();
             }}
           />
         </View>

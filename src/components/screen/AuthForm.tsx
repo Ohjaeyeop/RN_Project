@@ -1,15 +1,23 @@
 import React, {useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import {Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  View,
+  Keyboard,
+  Pressable,
+} from 'react-native';
 import {color, Theme} from '../../theme/color';
 import {useUser} from '../../providers/UserProvider';
 import styled from 'styled-components/native';
 import {StyledText} from '../shared/StyledText';
+import ScreenHeader from '../shared/ScreenHeader';
+import {useAsyncStorage} from '@react-native-async-storage/async-storage';
 
-const AuthFormContainer = styled.View`
-  padding: 50px;
+const AuthFormContainer = styled.SafeAreaView`
   flex: 1;
-  justify-content: center;
   background-color: ${({theme}: {theme: Theme}) => theme.background};
 `;
 
@@ -19,8 +27,8 @@ const StyledTextInput = styled.TextInput`
   border-radius: 5px;
   border-color: ${color.gray};
   padding: 5px;
-  margin-top: 15px;
-  margin-bottom: 15px;
+  margin-top: 8px;
+  margin-bottom: 12px;
   color: ${({theme}: {theme: Theme}) => theme.text};
 `;
 
@@ -28,6 +36,7 @@ const AuthForm = () => {
   const {setUser} = useUser();
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
+  const {setItem} = useAsyncStorage('user');
 
   const getUser = async () => {
     const user = await firestore()
@@ -48,6 +57,7 @@ const AuthForm = () => {
     if (user.size > 0) {
       if (user.docs[0].data().password === password) {
         setUser({username: username});
+        await setItem(JSON.stringify({username}));
         return;
       } else {
         Alert.alert('비밀번호가 일치하지 않습니다.');
@@ -75,6 +85,7 @@ const AuthForm = () => {
         })
         .then(() => {
           setUser({username: username});
+          setItem(JSON.stringify({username}));
         })
         .catch(err => {
           Alert.alert(err.message);
@@ -88,27 +99,32 @@ const AuthForm = () => {
 
   return (
     <AuthFormContainer>
-      <StyledText>Username:</StyledText>
-      <StyledTextInput
-        autoCapitalize={'none'}
-        autoCorrect={false}
-        onChangeText={setUserName}
-        value={username}
-      />
-      <StyledText>Password:</StyledText>
-      <StyledTextInput
-        secureTextEntry={true}
-        onChangeText={setPassword}
-        value={password}
-      />
-      <TouchableOpacity
-        style={[styles.button, {marginTop: 20}]}
-        onPress={handleSignIn}>
-        <Text style={styles.buttonText}>로그인</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>회원가입</Text>
-      </TouchableOpacity>
+      <Pressable style={{flex: 1}} onPress={() => Keyboard.dismiss()}>
+        <ScreenHeader title={'로그인'} />
+        <View style={{paddingHorizontal: 20}}>
+          <StyledText>아이디</StyledText>
+          <StyledTextInput
+            autoCapitalize={'none'}
+            autoCorrect={false}
+            onChangeText={setUserName}
+            value={username}
+          />
+          <StyledText>비밀번호</StyledText>
+          <StyledTextInput
+            secureTextEntry={true}
+            onChangeText={setPassword}
+            value={password}
+          />
+          <TouchableOpacity
+            style={[styles.button, {marginTop: 20}]}
+            onPress={handleSignIn}>
+            <Text style={styles.buttonText}>로그인</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+            <Text style={styles.buttonText}>회원가입</Text>
+          </TouchableOpacity>
+        </View>
+      </Pressable>
     </AuthFormContainer>
   );
 };
@@ -120,7 +136,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     marginBottom: 15,
-    borderRadius: 5,
+    borderRadius: 20,
   },
   buttonText: {
     color: color.white,

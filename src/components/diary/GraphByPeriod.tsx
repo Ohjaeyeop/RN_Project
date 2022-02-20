@@ -6,13 +6,13 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import {useUser} from '../providers/UserProvider';
-import DateUtil from '../utils/DateUtil';
-import {color, Theme} from '../theme/color';
+import {useUser} from '../../providers/UserProvider';
+import DateUtil from '../../utils/DateUtil';
+import {color, Theme} from '../../theme/color';
 import Graph from './Graph';
 import {useFocusEffect} from '@react-navigation/native';
 import styled from 'styled-components/native';
-import {getStudyInfoByPeriod} from '../redux/studyInfoSlice';
+import {getStudyInfoByPeriod} from '../../redux/studyInfoSlice';
 
 const SelectBox = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.box2};
@@ -40,9 +40,9 @@ const GraphByPeriod = ({date}: {date: number}) => {
       let total = 0;
       await getStudyInfoByPeriod(user.username, start, end).then(
         querySnapshot => {
-          if (querySnapshot.size > 0) {
-            total += querySnapshot.docs[0].data().total;
-          }
+          querySnapshot.docs.map(doc => {
+            total += doc.data().total;
+          });
         },
       );
       return total;

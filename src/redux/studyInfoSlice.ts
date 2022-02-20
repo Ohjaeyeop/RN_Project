@@ -12,6 +12,7 @@ export type StudyInfo = {
 
 type State = {
   studyInfo: StudyInfo;
+  updateState: 'idle' | 'loading' | 'succeeded';
 };
 
 const initialState: State = {
@@ -24,6 +25,7 @@ const initialState: State = {
     total: 0,
     date: DateUtil.now(),
   },
+  updateState: 'succeeded',
 };
 
 export const getUserRef = async (username: string) => {
@@ -39,6 +41,7 @@ export const getStudyInfoByPeriod = async (
   end: number,
 ) => {
   const userRef = await getUserRef(username);
+
   return await userRef.docs[0].ref
     .collection('StudyInfo')
     .where('date', '>=', start)
@@ -106,14 +109,25 @@ export const studyInfoSlice = createSlice({
       state.studyInfo[action.payload.subject] += action.payload.sec;
       state.studyInfo.total += action.payload.sec;
     },
+    setIdle: state => {
+      state.updateState = 'idle';
+    },
   },
   extraReducers: builder => {
     builder.addCase(getStudyInfo.fulfilled, (state, action) => {
       state.studyInfo = action.payload;
     });
+    builder.addCase(updateStudyInfo.pending, state => {
+      state.updateState = 'loading';
+    });
+    builder.addCase(updateStudyInfo.fulfilled, state => {
+      state.updateState = 'succeeded';
+    });
   },
 });
 
-export const {increment} = studyInfoSlice.actions;
+export const {increment, setIdle} = studyInfoSlice.actions;
 export const selectStudyInfo = (state: RootState) => state.studyInfo.studyInfo;
+export const selectUpdateState = (state: RootState) =>
+  state.studyInfo.updateState;
 export default studyInfoSlice.reducer;

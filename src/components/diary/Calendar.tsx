@@ -1,13 +1,17 @@
 import React, {useCallback, useRef, useState} from 'react';
 import styled from 'styled-components/native';
-import {color, Theme} from '../theme/color';
-import DateUtil from '../utils/DateUtil';
+import {color, Theme} from '../../theme/color';
+import DateUtil from '../../utils/DateUtil';
 import {ActivityIndicator, Platform, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {useUser} from '../providers/UserProvider';
+import {useUser} from '../../providers/UserProvider';
 import {useFocusEffect} from '@react-navigation/native';
-import {StyledText} from './shared/StyledText';
-import {getStudyInfoByPeriod} from '../redux/studyInfoSlice';
+import {StyledText} from '../shared/StyledText';
+import {
+  getStudyInfoByPeriod,
+  selectUpdateState,
+} from '../../redux/studyInfoSlice';
+import {useAppSelector} from '../../hooks/useReduxFunction';
 
 const CalendarView = styled.View`
   background-color: ${({theme}: {theme: Theme}) => theme.background};
@@ -23,11 +27,18 @@ const RowBox = styled.View`
   justify-content: space-between;
 `;
 
-const TextBox = styled.Pressable`
+type TextBoxProps = {
+  isSelected: boolean;
+  theme: Theme;
+};
+
+const TextBox = styled.Pressable<TextBoxProps>`
   width: 40px;
   height: 40px;
   align-items: center;
   justify-content: center;
+  border-color: ${props =>
+    props.isSelected ? color.subPrimary : props.theme.background};
 `;
 
 const Mark = styled.View`
@@ -36,7 +47,7 @@ const Mark = styled.View`
   border-radius: 3px;
   background-color: ${color.primary};
   position: absolute;
-  top: 1px;
+  top: 2px;
 `;
 
 const Days = styled.Text`
@@ -68,10 +79,11 @@ type Props = {
 const Calendar = ({today, selectedDate, selectDate}: Props) => {
   const {user} = useUser();
   const [lastDate, setLastDate] = useState<number>(today);
-  const firstDay = useRef(0);
+  const firstDay = useRef(DateUtil.getFirstDay(today));
   const [displayedDates, setDisplayedDates] = useState<number[]>([]);
   const [studiedDates, setStudiedDates] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
+  const updateState = useAppSelector(selectUpdateState);
 
   const getStudyInfosByMonth = useCallback(
     async (date: number) => {
@@ -86,12 +98,10 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
         Math.floor(date / 100) * 100 + 1,
         date,
       ).then(querySnapshot => {
-        if (querySnapshot.size > 0) {
-          dates.push(querySnapshot.docs[0].data().date);
-        }
+        querySnapshot.docs.map(doc => dates.push(doc.data().date));
       });
-      setLoading(false);
       setStudiedDates(dates);
+      setLoading(false);
     },
     [user],
   );
@@ -111,10 +121,10 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
   }, []);
 
   const changeCalendar = useCallback(
-    (date: number) => {
+    async (date: number) => {
       firstDay.current = DateUtil.getFirstDay(date);
+      await getStudyInfosByMonth(date);
       getCalendarInfo(date);
-      getStudyInfosByMonth(date);
     },
     [getCalendarInfo, getStudyInfosByMonth],
   );
@@ -122,8 +132,10 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
   useFocusEffect(
     useCallback(() => {
       setLastDate(today);
-      changeCalendar(today);
-    }, [changeCalendar, today]),
+      setLoading(true);
+      updateState === 'succeeded' && getStudyInfosByMonth(today);
+      updateState === 'succeeded' && getCalendarInfo(today);
+    }, [getCalendarInfo, getStudyInfosByMonth, today, updateState]),
   );
 
   const changeToPrevMonth = () => {
@@ -183,7 +195,7 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
       </View>
       <RowBox>
         {days.map(day => (
-          <TextBox key={day}>
+          <TextBox isSelected={false} key={day}>
             <Days>{day}</Days>
           </TextBox>
         ))}
@@ -207,13 +219,8 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
                   return (
                     <TextBox
                       key={index + 7}
-                      style={
-                        displayedDates[index] === selectedDate && {
-                          borderRadius: 20,
-                          borderWidth: 2,
-                          borderColor: color.subPrimary,
-                        }
-                      }
+                      isSelected={displayedDates[index] === selectedDate}
+                      style={{borderWidth: 2, borderRadius: 20}}
                       onPress={
                         index >= firstDay.current &&
                         index < displayedDates.length

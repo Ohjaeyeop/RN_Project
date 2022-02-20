@@ -1,7 +1,8 @@
 /**
  * @format
  */
-
+import 'react-native-gesture-handler';
+import {gestureHandlerRootHOC} from 'react-native-gesture-handler';
 import React, {useEffect, useState} from 'react';
 import {Appearance, AppRegistry} from 'react-native';
 import App from './src/App';
@@ -33,4 +34,4 @@ const RnApp = () => {
   );
 };
 
-AppRegistry.registerComponent(appName, () => RnApp);
+AppRegistry.registerComponent(appName, () => gestureHandlerRootHOC(RnApp));

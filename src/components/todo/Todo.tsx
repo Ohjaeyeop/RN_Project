@@ -1,14 +1,19 @@
 import React from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
-import {TodoObj} from './screen/Todos';
-import {color} from '../theme/color';
+import {TouchableOpacity, View} from 'react-native';
+import {TodoObj} from '../screen/Todos';
+import {color, Theme} from '../../theme/color';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {StyledText} from './shared/StyledText';
+import {StyledText} from '../shared/StyledText';
+import styled from 'styled-components/native';
 
 type Props = {
   toggleComplete: (id: string, complete: boolean) => Promise<void>;
   onPress: (id: string, title: string, body: string) => void;
 } & {type: 'TODO' | 'DONE'} & TodoObj;
+
+const StyledBox = styled.View`
+  background-color: ${({theme}: {theme: Theme}) => theme.box};
+`;
 
 const Todo = ({
   toggleComplete,
@@ -47,16 +52,15 @@ const Todo = ({
           {title}
         </StyledText>
       </View>
-      <View
+      <StyledBox
         style={{
           height: 40,
-          backgroundColor: color.lightGray,
           padding: 8,
           justifyContent: 'center',
           borderRadius: 8,
         }}>
-        <Text style={{color: color.navy, fontSize: 16}}>{body}</Text>
-      </View>
+        <StyledText style={{fontSize: 16}}>{body}</StyledText>
+      </StyledBox>
     </TouchableOpacity>
   );
 };

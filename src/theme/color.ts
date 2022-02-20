@@ -20,6 +20,7 @@ export type Theme = {
   box: string;
   subText: string;
   box2: string;
+  modal: string;
 };
 
 export const light = {
@@ -28,6 +29,7 @@ export const light = {
   box: color.lightGray,
   subText: color.navy,
   box2: color.lightLightGray,
+  modal: color.white,
 };
 
 export const dark = {
@@ -36,4 +38,5 @@ export const dark = {
   box: color.subDark,
   subText: color.white,
   box2: color.subDark,
+  modal: '#333333',
 };

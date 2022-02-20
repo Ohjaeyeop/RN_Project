@@ -7,11 +7,11 @@ import {
   Text,
   View,
 } from 'react-native';
-import {color, Theme} from '../theme/color';
-import DateUtil from '../utils/DateUtil';
-import getDisplayedTime from '../utils/getDisplayedTime';
+import {color, Theme} from '../../theme/color';
+import DateUtil from '../../utils/DateUtil';
+import getDisplayedTime from '../../utils/getDisplayedTime';
 import styled from 'styled-components/native';
-import {StyledText} from './shared/StyledText';
+import {StyledText} from '../shared/StyledText';
 import {Period} from './GraphByPeriod';
 
 const SubText = styled.Text`
@@ -130,7 +130,7 @@ const Graph = ({
           </View>
           <TimeBox style={styles.timeBox}>
             <Image
-              source={require('../../assets/book.png')}
+              source={require('../../../assets/book.png')}
               style={{width: 25, height: 28, marginRight: 10}}
             />
             <View>
