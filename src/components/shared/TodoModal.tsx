@@ -16,7 +16,7 @@ const StyledText = styled.Text`
 `;
 
 const ModalView = styled(Pressable)`
-  background-color: ${({theme}: {theme: Theme}) => theme.background};
+  background-color: ${({theme}: {theme: Theme}) => theme.modal};
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 `;
@@ -116,8 +116,8 @@ const TodoModal = ({
             autoCorrect={false}
             multiline={true}
           />
+          {children}
         </ScrollView>
-        {children}
       </ModalView>
     </Modal>
   );
