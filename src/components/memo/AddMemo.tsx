@@ -1,8 +1,14 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import styled from 'styled-components/native';
-import {color, Theme} from '../../theme/color';
+import {Theme} from '../../theme/color';
 import ScreenHeader from '../shared/ScreenHeader';
-import {View, TouchableOpacity, TextInput, ScrollView} from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+  AppState,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {StyledText} from '../shared/StyledText';
 import {AddMemoProps} from '../../navigation/MemoStackNavigator';
@@ -31,6 +37,7 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
   );
   const textInputRef = useRef<TextInput | null>(null);
   const [text, setText] = useState('');
+  const timerId = useRef<NodeJS.Timer>();
 
   useFocusEffect(
     useCallback(() => {
@@ -43,6 +50,18 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
     }, [id, memosRef]),
   );
 
+  useEffect(() => {
+    const subscriber = AppState.addEventListener('change', state => {
+      if (state === 'background') {
+        timerId.current && loggingStop(timerId.current);
+      }
+    });
+    return () => {
+      timerId.current && loggingStop(timerId.current);
+      subscriber.remove();
+    };
+  }, []);
+
   const addMemo = async () => {
     text && (await memosRef.add({timestamp: new Date().toISOString(), text}));
   };
@@ -51,7 +70,20 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
     await memosRef.doc(id).update({timestamp: new Date().toISOString(), text});
   };
 
+  const loggingStart = () => {
+    logging();
+    timerId.current = setInterval(logging, 30000);
+    console.log('loggingStart');
+  };
+
+  const loggingStop = (id: NodeJS.Timer) => {
+    clearInterval(id);
+    timerId.current = undefined;
+    console.log('loggingStop');
+  };
+
   const logging = async () => {
+    console.log('logging');
     await analytics().logEvent('memo', {
       id: username,
       date: new Date().toISOString(),
@@ -106,7 +138,7 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
             autoCapitalize="none"
             value={text}
             onChangeText={text => {
-              logging();
+              timerId.current || loggingStart();
               setText(text);
             }}
           />

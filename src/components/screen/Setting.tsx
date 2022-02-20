@@ -28,12 +28,7 @@ const Setting = () => {
             로그아웃
           </Text>
           <TouchableOpacity
-            style={{
-              borderWidth: 1,
-              borderColor: color.gray,
-              borderStyle: 'dashed',
-              padding: 2,
-            }}
+            style={{padding: 2}}
             onPress={() => setUser(undefined)}>
             <Icon name={'md-arrow-forward'} size={20} color={color.gray} />
           </TouchableOpacity>
