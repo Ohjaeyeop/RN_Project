@@ -813,6 +813,8 @@ PODS:
     - React-jsi (= 0.67.2)
     - React-logger (= 0.67.2)
     - React-perflogger (= 0.67.2)
+  - RNCAsyncStorage (1.16.1):
+    - React-Core
   - RNFBAnalytics (14.4.0):
     - Firebase/Analytics (= 8.11.0)
     - React-Core
@@ -919,6 +921,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
@@ -1022,6 +1025,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-async-storage/async-storage"
   RNFBAnalytics:
     :path: "../node_modules/@react-native-firebase/analytics"
   RNFBApp:
@@ -1099,6 +1104,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: 99c7f67fba7a5ade46e98e870c6ff2444484f995
   React-runtimeexecutor: 2450b43df7ffe8e805a0b3dcb2abd4282f1f1836
   ReactCommon: d98c6c96b567f9b3a15f9fd4cc302c1eda8e3cf2
+  RNCAsyncStorage: b49b4e38a1548d03b74b30e558a1d18465b94be7
   RNFBAnalytics: b493b214ab0bfeda704a6f899f6956f5233f7412
   RNFBApp: 227358730432d119d9b76ed33eba9e2306a9d85a
   RNFBFirestore: 1497909ed965c98a73501411d752b579768ff5f1

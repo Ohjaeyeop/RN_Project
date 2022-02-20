@@ -14,6 +14,7 @@ import {useUser} from '../../providers/UserProvider';
 import styled from 'styled-components/native';
 import {StyledText} from '../shared/StyledText';
 import ScreenHeader from '../shared/ScreenHeader';
+import {useAsyncStorage} from '@react-native-async-storage/async-storage';
 
 const AuthFormContainer = styled.SafeAreaView`
   flex: 1;
@@ -35,6 +36,7 @@ const AuthForm = () => {
   const {setUser} = useUser();
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
+  const {setItem} = useAsyncStorage('user');
 
   const getUser = async () => {
     const user = await firestore()
@@ -55,6 +57,7 @@ const AuthForm = () => {
     if (user.size > 0) {
       if (user.docs[0].data().password === password) {
         setUser({username: username});
+        await setItem(JSON.stringify({username}));
         return;
       } else {
         Alert.alert('비밀번호가 일치하지 않습니다.');
@@ -82,6 +85,7 @@ const AuthForm = () => {
         })
         .then(() => {
           setUser({username: username});
+          setItem(JSON.stringify({username}));
         })
         .catch(err => {
           Alert.alert(err.message);

@@ -5,6 +5,7 @@ import {color, Theme} from '../../theme/color';
 import {View, Text, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useUser} from '../../providers/UserProvider';
+import {useAsyncStorage} from '@react-native-async-storage/async-storage';
 
 const SettingContainer = styled.SafeAreaView`
   flex: 1;
@@ -13,13 +14,19 @@ const SettingContainer = styled.SafeAreaView`
 
 const Setting = () => {
   const {setUser} = useUser();
+  const {removeItem} = useAsyncStorage('user');
+
+  const logOut = async () => {
+    setUser(undefined);
+    await removeItem();
+  };
 
   return (
     <SettingContainer>
       <ScreenHeader title={'설정'} />
       <TouchableOpacity
         style={{flex: 1, paddingHorizontal: 28}}
-        onPress={() => setUser(undefined)}>
+        onPress={() => logOut()}>
         <View
           style={{
             flexDirection: 'row',
