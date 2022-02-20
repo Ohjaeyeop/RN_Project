@@ -73,17 +73,14 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
   const loggingStart = () => {
     logging();
     timerId.current = setInterval(logging, 30000);
-    console.log('loggingStart');
   };
 
   const loggingStop = (id: NodeJS.Timer) => {
     clearInterval(id);
     timerId.current = undefined;
-    console.log('loggingStop');
   };
 
   const logging = async () => {
-    console.log('logging');
     await analytics().logEvent('memo', {
       id: username,
       date: new Date().toISOString(),

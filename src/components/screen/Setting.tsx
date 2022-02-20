@@ -17,7 +17,9 @@ const Setting = () => {
   return (
     <SettingContainer>
       <ScreenHeader title={'설정'} />
-      <View style={{flex: 1, paddingHorizontal: 28}}>
+      <TouchableOpacity
+        style={{flex: 1, paddingHorizontal: 28}}
+        onPress={() => setUser(undefined)}>
         <View
           style={{
             flexDirection: 'row',
@@ -27,13 +29,11 @@ const Setting = () => {
           <Text style={{color: color.gray, fontWeight: '700', fontSize: 12}}>
             로그아웃
           </Text>
-          <TouchableOpacity
-            style={{padding: 2}}
-            onPress={() => setUser(undefined)}>
+          <View style={{padding: 2}}>
             <Icon name={'md-arrow-forward'} size={20} color={color.gray} />
-          </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     </SettingContainer>
   );
 };
