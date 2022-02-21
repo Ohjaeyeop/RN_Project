@@ -38,6 +38,8 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
   const textInputRef = useRef<TextInput | null>(null);
   const [text, setText] = useState('');
   const timerId = useRef<NodeJS.Timer>();
+  const addMemo = useRef<() => Promise<void>>();
+  const editMemo = useRef<() => Promise<void>>();
 
   useFocusEffect(
     useCallback(() => {
@@ -62,11 +64,11 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
     };
   }, []);
 
-  const addMemo = async () => {
+  addMemo.current = async () => {
     text && (await memosRef.add({timestamp: new Date().toISOString(), text}));
   };
 
-  const editMemo = async () => {
+  editMemo.current = async () => {
     await memosRef.doc(id).update({timestamp: new Date().toISOString(), text});
   };
 
@@ -87,6 +89,12 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
     });
   };
 
+  useEffect(() => {
+    return () => {
+      id ? editMemo.current?.() : addMemo.current?.();
+    };
+  }, [id]);
+
   return (
     <MemoContainer>
       <ScreenHeader title="">
@@ -106,10 +114,7 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
               justifyContent: 'center',
               alignItems: 'center',
             }}
-            onPress={() => {
-              id ? editMemo() : addMemo();
-              navigation.pop();
-            }}>
+            onPress={() => navigation.pop()}>
             <StyledIcon name={'md-arrow-back-sharp'} size={20} />
           </TouchableOpacity>
           <TouchableOpacity

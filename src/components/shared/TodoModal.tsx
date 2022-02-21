@@ -92,7 +92,7 @@ const TodoModal = ({
           paddingHorizontal: 20 + safeArea.left,
           paddingTop: 24,
         }}>
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps={'handled'}>
           <StyledText
             style={{
               fontWeight: '700',

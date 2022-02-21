@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import MainTabNavigator from './navigation/MainTabNavigator';
 import AuthForm from './components/screen/AuthForm';
 import {useUser} from './providers/UserProvider';
