@@ -78,7 +78,6 @@ const TodoModal = ({
       swipeDirection="down"
       onSwipeComplete={() => closeModal()}
       supportedOrientations={['portrait', 'landscape']}
-      useNativeDriver={true}
       onModalShow={() => {
         inputRef.current?.focus();
       }}
