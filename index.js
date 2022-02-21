@@ -14,13 +14,17 @@ import {ThemeProvider} from 'styled-components';
 import {light, dark} from './src/theme/color';
 
 const RnApp = () => {
-  const [appTheme, setAppTheme] = useState(light);
+  const [appTheme, setAppTheme] = useState(
+    Appearance.getColorScheme() === 'dark' ? dark : light,
+  );
 
   useEffect(() => {
-    Appearance.addChangeListener(({colorScheme}) => {
+    const subscriber = Appearance.addChangeListener(({colorScheme}) => {
       setAppTheme(Appearance.getColorScheme() === 'dark' ? dark : light);
     });
-    return () => {};
+    return () => {
+      subscriber.remove();
+    };
   }, []);
 
   return (
