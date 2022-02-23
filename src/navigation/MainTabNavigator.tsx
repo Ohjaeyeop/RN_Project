@@ -5,7 +5,7 @@ import Diary from '../components/screen/Diary';
 import Todos from '../components/screen/Todos';
 import Setting from '../components/screen/Setting';
 import StudyTimer from '../components/screen/StudyTimer';
-import {Image, View} from 'react-native';
+import {Image} from 'react-native';
 import {color, Theme} from '../theme/color';
 import styled from 'styled-components/native';
 import MemoStackNavigator from './MemoStackNavigator';
@@ -60,7 +60,7 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'캘린더'} />
             ),
-            tabBarIcon: ({focused}) => (
+            tabBarIcon: () => (
               <Image
                 source={require('../../assets/calendar.png')}
                 style={{width: 20, height: 20}}
@@ -75,7 +75,7 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'메모'} />
             ),
-            tabBarIcon: ({focused}) => (
+            tabBarIcon: () => (
               <Image
                 source={require('../../assets/notepad.png')}
                 style={{width: 20, height: 20}}
@@ -91,7 +91,7 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'타이머'} />
             ),
-            tabBarIcon: ({focused}) => (
+            tabBarIcon: () => (
               <Image
                 source={require('../../assets/chronometer.png')}
                 style={{width: 20, height: 20}}
@@ -107,7 +107,7 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'투두'} />
             ),
-            tabBarIcon: ({focused}) => (
+            tabBarIcon: () => (
               <Image
                 source={require('../../assets/to-do-list.png')}
                 style={{width: 20, height: 20}}
@@ -123,7 +123,7 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'설정'} />
             ),
-            tabBarIcon: ({focused}) => (
+            tabBarIcon: () => (
               <Image
                 source={require('../../assets/gear.png')}
                 style={{width: 20, height: 20}}
