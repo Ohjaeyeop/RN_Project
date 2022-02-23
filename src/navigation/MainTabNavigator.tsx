@@ -5,8 +5,7 @@ import Diary from '../components/screen/Diary';
 import Todos from '../components/screen/Todos';
 import Setting from '../components/screen/Setting';
 import StudyTimer from '../components/screen/StudyTimer';
-import Memo from '../components/screen/Memo';
-import {View} from 'react-native';
+import {Image, View} from 'react-native';
 import {color, Theme} from '../theme/color';
 import styled from 'styled-components/native';
 import MemoStackNavigator from './MemoStackNavigator';
@@ -37,19 +36,6 @@ const TabBarBackground = styled.View`
   width: 100%;
 `;
 
-const TabBarIcon = ({focused}: {focused: boolean}) => {
-  return (
-    <View
-      style={{
-        width: 20,
-        height: 20,
-        borderRadius: 4,
-        backgroundColor: focused ? color.primary : color.gray,
-      }}
-    />
-  );
-};
-
 const TabBarLabel = ({focused, label}: {focused: boolean; label: string}) => {
   return focused ? (
     <FocusedText>{label}</FocusedText>
@@ -74,7 +60,12 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'캘린더'} />
             ),
-            tabBarIcon: ({focused}) => <TabBarIcon focused={focused} />,
+            tabBarIcon: ({focused}) => (
+              <Image
+                source={require('../../assets/calendar.png')}
+                style={{width: 20, height: 20}}
+              />
+            ),
           }}
         />
         <Tab.Screen
@@ -84,7 +75,12 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'메모'} />
             ),
-            tabBarIcon: ({focused}) => <TabBarIcon focused={focused} />,
+            tabBarIcon: ({focused}) => (
+              <Image
+                source={require('../../assets/notepad.png')}
+                style={{width: 20, height: 20}}
+              />
+            ),
           }}
         />
         <Tab.Screen
@@ -95,7 +91,12 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'타이머'} />
             ),
-            tabBarIcon: ({focused}) => <TabBarIcon focused={focused} />,
+            tabBarIcon: ({focused}) => (
+              <Image
+                source={require('../../assets/chronometer.png')}
+                style={{width: 20, height: 20}}
+              />
+            ),
           }}
         />
         <Tab.Screen
@@ -106,7 +107,12 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'투두'} />
             ),
-            tabBarIcon: ({focused}) => <TabBarIcon focused={focused} />,
+            tabBarIcon: ({focused}) => (
+              <Image
+                source={require('../../assets/to-do-list.png')}
+                style={{width: 20, height: 20}}
+              />
+            ),
           }}
         />
         <Tab.Screen
@@ -117,7 +123,12 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'설정'} />
             ),
-            tabBarIcon: ({focused}) => <TabBarIcon focused={focused} />,
+            tabBarIcon: ({focused}) => (
+              <Image
+                source={require('../../assets/gear.png')}
+                style={{width: 20, height: 20}}
+              />
+            ),
           }}
         />
       </Tab.Navigator>
