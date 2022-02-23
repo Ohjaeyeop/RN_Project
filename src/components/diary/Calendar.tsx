@@ -24,7 +24,7 @@ const CalendarView = styled.View`
 const RowBox = styled.View`
   width: 100%;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-evenly;
 `;
 
 type TextBoxProps = {
@@ -132,10 +132,17 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
   useFocusEffect(
     useCallback(() => {
       setLastDate(today);
-      setLoading(true);
       updateState === 'succeeded' && getStudyInfosByMonth(today);
       updateState === 'succeeded' && getCalendarInfo(today);
     }, [getCalendarInfo, getStudyInfosByMonth, today, updateState]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setLoading(true);
+      };
+    }, []),
   );
 
   const changeToPrevMonth = () => {

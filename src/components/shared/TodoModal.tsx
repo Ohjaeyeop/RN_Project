@@ -9,6 +9,7 @@ import styled from 'styled-components/native';
 import {color, Theme} from '../../theme/color';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Modal from 'react-native-modal';
+import useIsFloatingKeyboard from '../../hooks/useIsFloatingKeyboard';
 
 const StyledText = styled.Text`
   color: ${({theme}: {theme: Theme}) => theme.text};
@@ -62,9 +63,10 @@ const TodoModal = ({
   closeModal,
   children,
 }: Props) => {
-  const {width, height} = useWindowDimensions();
+  const {width} = useWindowDimensions();
   const safeArea = useSafeAreaInsets();
   const inputRef = useRef<TextInput | null>(null);
+  const floating = useIsFloatingKeyboard();
 
   return (
     <Modal
@@ -74,7 +76,7 @@ const TodoModal = ({
       backdropColor="rgba(33, 37, 41, 0.5)"
       onBackButtonPress={() => closeModal()}
       onBackdropPress={() => closeModal()}
-      avoidKeyboard={true}
+      avoidKeyboard={!floating}
       swipeDirection="down"
       onSwipeComplete={() => closeModal()}
       supportedOrientations={['portrait', 'landscape']}
