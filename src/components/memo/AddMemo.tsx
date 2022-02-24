@@ -8,6 +8,8 @@ import {
   TextInput,
   ScrollView,
   AppState,
+  TouchableWithoutFeedback,
+  Pressable,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {StyledText} from '../shared/StyledText';
@@ -129,8 +131,10 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
           </TouchableOpacity>
         </View>
       </ScreenHeader>
-      <ScrollView style={{flex: 1, paddingHorizontal: 20}}>
-        <View style={{flex: 1}}>
+      <Pressable
+        style={{flex: 1}}
+        onPress={() => textInputRef.current?.focus()}>
+        <ScrollView style={{flex: 1, paddingHorizontal: 20}}>
           <StyledTextInput
             ref={ref => (textInputRef.current = ref)}
             autoFocus={true}
@@ -144,8 +148,8 @@ const AddMemo = ({route, navigation}: AddMemoProps) => {
               setText(text);
             }}
           />
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </Pressable>
     </MemoContainer>
   );
 };
