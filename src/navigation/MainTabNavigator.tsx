@@ -60,10 +60,10 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'캘린더'} />
             ),
-            tabBarIcon: () => (
+            tabBarIcon: ({focused}) => (
               <Image
                 source={require('../../assets/calendar.png')}
-                style={{width: 20, height: 20}}
+                style={{width: 20, height: 20, opacity: focused ? 1 : 0.5}}
               />
             ),
           }}
@@ -75,10 +75,10 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'메모'} />
             ),
-            tabBarIcon: () => (
+            tabBarIcon: ({focused}) => (
               <Image
                 source={require('../../assets/notepad.png')}
-                style={{width: 20, height: 20}}
+                style={{width: 20, height: 20, opacity: focused ? 1 : 0.5}}
               />
             ),
           }}
@@ -91,10 +91,10 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'타이머'} />
             ),
-            tabBarIcon: () => (
+            tabBarIcon: ({focused}) => (
               <Image
                 source={require('../../assets/chronometer.png')}
-                style={{width: 20, height: 20}}
+                style={{width: 20, height: 20, opacity: focused ? 1 : 0.5}}
               />
             ),
           }}
@@ -107,10 +107,10 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'투두'} />
             ),
-            tabBarIcon: () => (
+            tabBarIcon: ({focused}) => (
               <Image
                 source={require('../../assets/to-do-list.png')}
-                style={{width: 20, height: 20}}
+                style={{width: 20, height: 20, opacity: focused ? 1 : 0.5}}
               />
             ),
           }}
@@ -123,10 +123,10 @@ const MainTabNavigator = () => {
             tabBarLabel: ({focused}) => (
               <TabBarLabel focused={focused} label={'설정'} />
             ),
-            tabBarIcon: () => (
+            tabBarIcon: ({focused}) => (
               <Image
                 source={require('../../assets/gear.png')}
-                style={{width: 20, height: 20}}
+                style={{width: 20, height: 20, opacity: focused ? 1 : 0.5}}
               />
             ),
           }}
