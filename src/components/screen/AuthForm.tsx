@@ -1,20 +1,13 @@
 import React, {useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import {
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  View,
-  Keyboard,
-  Pressable,
-} from 'react-native';
+import {Alert, View, Keyboard, Pressable} from 'react-native';
 import {color, Theme} from '../../theme/color';
 import {useUser} from '../../providers/UserProvider';
 import styled from 'styled-components/native';
 import {StyledText} from '../shared/StyledText';
 import ScreenHeader from '../shared/ScreenHeader';
 import {useAsyncStorage} from '@react-native-async-storage/async-storage';
+import Button from '../shared/Button';
 
 const AuthFormContainer = styled.SafeAreaView`
   flex: 1;
@@ -115,33 +108,34 @@ const AuthForm = () => {
             onChangeText={setPassword}
             value={password}
           />
-          <TouchableOpacity
-            style={[styles.button, {marginTop: 20}]}
-            onPress={handleSignIn}>
-            <Text style={styles.buttonText}>로그인</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-            <Text style={styles.buttonText}>회원가입</Text>
-          </TouchableOpacity>
+          <Button
+            text={'로그인'}
+            style={{
+              backgroundColor: color.primary,
+              width: '100%',
+              padding: 12,
+              marginVertical: 16,
+            }}
+            textColor={color.white}
+            fontSize={14}
+            onPress={handleSignIn}
+          />
+          <Button
+            text={'회원가입'}
+            style={{
+              backgroundColor: color.primary,
+              width: '100%',
+              padding: 12,
+              marginTop: 4,
+            }}
+            textColor={color.white}
+            fontSize={14}
+            onPress={handleSignUp}
+          />
         </View>
       </Pressable>
     </AuthFormContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    width: '100%',
-    backgroundColor: color.primary,
-    alignItems: 'center',
-    padding: 12,
-    marginBottom: 15,
-    borderRadius: 20,
-  },
-  buttonText: {
-    color: color.white,
-    fontWeight: 'bold',
-  },
-});
 
 export default AuthForm;

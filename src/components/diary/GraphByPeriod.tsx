@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Pressable,
   View,
@@ -31,6 +31,7 @@ const GraphByPeriod = ({date}: {date: number}) => {
   const [period, setPeriod] = useState<Period>('일간');
   const [studyTimes, setStudyTimes] = useState<StudyTimesByPeriod>();
   const [loading, setLoading] = useState(true);
+  const mounted = useRef(true);
 
   const getStudyTime = useCallback(
     async (start: number, end: number) => {
@@ -88,8 +89,10 @@ const GraphByPeriod = ({date}: {date: number}) => {
       }
       obj[periods[i]] = data;
     }
-    setStudyTimes(obj);
-    setLoading(false);
+    if (mounted.current) {
+      setStudyTimes(obj);
+      setLoading(false);
+    }
   }, [getRange, getStudyTime]);
 
   useFocusEffect(
@@ -97,6 +100,12 @@ const GraphByPeriod = ({date}: {date: number}) => {
       getData();
     }, [getData]),
   );
+
+  useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   return (
     <View style={{paddingHorizontal: 20, alignItems: 'center'}}>

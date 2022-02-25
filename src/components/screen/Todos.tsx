@@ -165,9 +165,14 @@ const Todos = () => {
         closeModal={closeAddModal}>
         <Button
           text="저장하기"
-          backgroundColor={color.primary}
+          style={{
+            backgroundColor: color.primary,
+            width: '100%',
+            padding: 18,
+            marginVertical: 16,
+          }}
           textColor={color.white}
-          width="100%"
+          fontSize={18}
           onPress={() => {
             addTodo();
             closeAddModal();
@@ -184,9 +189,14 @@ const Todos = () => {
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Button
             text="삭제하기"
-            backgroundColor={color.lightGray}
+            style={{
+              backgroundColor: color.lightGray,
+              width: '48%',
+              padding: 18,
+              marginVertical: 16,
+            }}
             textColor={color.gray}
-            width="48%"
+            fontSize={18}
             onPress={() => {
               deleteTodo();
               closeEditModal();
@@ -194,9 +204,14 @@ const Todos = () => {
           />
           <Button
             text="저장하기"
-            backgroundColor={color.primary}
+            style={{
+              backgroundColor: color.primary,
+              width: '48%',
+              padding: 18,
+              marginVertical: 16,
+            }}
             textColor={color.white}
-            width="48%"
+            fontSize={18}
             onPress={() => {
               editTodo();
               closeEditModal();

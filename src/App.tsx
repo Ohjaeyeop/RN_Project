@@ -4,6 +4,9 @@ import AuthForm from './components/screen/AuthForm';
 import {useUser} from './providers/UserProvider';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {useAsyncStorage} from '@react-native-async-storage/async-storage';
+import {LogBox} from 'react-native';
+
+LogBox.ignoreAllLogs();
 
 const App = () => {
   const {getItem} = useAsyncStorage('user');

@@ -1,20 +1,21 @@
 import React from 'react';
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, ViewStyle} from 'react-native';
 
 type Props = {
   text: string;
-  backgroundColor: string;
   textColor: string;
-  width: string;
+  fontSize: number;
   onPress: () => void;
+  style: ViewStyle;
 };
 
-const Button = ({text, backgroundColor, textColor, width, onPress}: Props) => {
+const Button = ({text, textColor, fontSize, onPress, style}: Props) => {
   return (
     <TouchableOpacity
-      style={[styles.button, {backgroundColor: backgroundColor, width: width}]}
+      testID={'button'}
+      style={[styles.button, {...style}]}
       onPress={onPress}>
-      <Text style={{color: textColor, fontSize: 18, fontWeight: '700'}}>
+      <Text style={{color: textColor, fontSize, fontWeight: '700'}}>
         {text}
       </Text>
     </TouchableOpacity>
@@ -24,10 +25,8 @@ const Button = ({text, backgroundColor, textColor, width, onPress}: Props) => {
 const styles = StyleSheet.create({
   button: {
     borderRadius: 30,
-    padding: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 16,
   },
 });
 

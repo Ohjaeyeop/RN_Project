@@ -225,6 +225,7 @@ const Calendar = ({today, selectedDate, selectDate}: Props) => {
                   const index = i * 7 + j;
                   return (
                     <TextBox
+                      testID={displayedDates[index]?.toString()}
                       key={index + 7}
                       isSelected={displayedDates[index] === selectedDate}
                       style={{borderWidth: 2, borderRadius: 20}}
