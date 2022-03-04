@@ -24,10 +24,10 @@ export default function setIntervalWithTimeout(
 
   const timeout = () => {
     const now = Date.now();
-    const sec = Math.max(1, Math.round((now - prev) / 1000));
+    const sec = Math.max(1, Math.floor((now - prev) / 1000));
     const delta = Math.max(0, Date.now() - expected);
 
-    expected += intervalMs;
+    expected += sec * 1000;
     prev = now;
     handleWrapper.handler = setTimeout(() => {
       callback(sec, () => {
